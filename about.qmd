@@ -1,0 +1,8 @@
+---
+title: "About"
+---
+
+This is a website of recurring quarterly meeting series dedicated to fostering discussions on R programming, data science, and statistical computing within our research unit.
+
+Each session features hands-on demonstrations, deep dives into technical topics, and collaborative problem-solving, ensuring both theoretical depth and practical applicability. 
+

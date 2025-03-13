@@ -1,0 +1,201 @@
+---
+title: "Общие показатели межстранового сравнения"
+author: "Nikita M."
+format:
+  html:
+    page-layout: article
+    toc: true
+    html-math-method: katex
+    highlight: tango
+date: "2025-03-13"
+title-block-banner: false
+categories: [R-tips]
+---
+
+
+```{r setup, include=FALSE}
+library(lobstr)
+# options(warnPartialMatchDollar = TRUE)
+```
+
+## Floating-Point Precision in R
+
+Floating-point numbers in R are subject to precision limitations due to [IEEE 754](https://en.wikipedia.org/wiki/IEEE_754) representation.
+This section explores how seemingly simple operations can lead to unexpected results.
+
+### **Example 1: Floating-Point Comparison Fails**
+
+```{r floating-point-compare, echo=TRUE}
+.1 == .3 / 3
+```
+
+**Why does this return `FALSE`?**
+
+-   Due to how floating-point arithmetic works in computers, numbers like `0.1`, `0.3`, and `0.3 / 3` are stored in binary.
+
+-   Some decimal fractions **cannot be represented exactly in binary**, leading to tiny rounding errors.
+
+-   Even though mathematically `.1` and `.3 / 3` should be the same, their internal representations **are not exactly equal**.
+
+### **Example 2: Inspecting the Actual Value Stored in Memory**
+
+```{r floating-point-print, echo=TRUE}
+.3 / 3
+print(.3 / 3, digits=16)
+```
+
+**Explanation:**
+
+-   The first output shows what R normally prints, which is rounded for display.
+
+-   The second output uses `digits=16` to show more of the **actual stored precision**.
+
+-   This reveals that `0.3 / 3` is actually stored as `0.09999999999999999`, **not exactly** `0.1`.
+
+### **Example 3: Using `all.equal()` Instead of `==`**
+
+```{r floating-point-all-equal, echo=TRUE}
+all.equal(.1, .3 / 3)
+```
+
+**Why does this return `TRUE`?**
+
+-   `all.equal()` does not check for **exact** equality but allows a **small tolerance** to account for floating-point errors.
+
+-   It is the **preferred way** to compare floating-point numbers in R.
+
+### **Example 4: Machine Epsilon & Adjusting Tolerance**
+
+```{r floating-point-eps, echo=TRUE}
+.Machine$double.eps
+all.equal(.1, .3 / 3, tolerance = 2.2e-17)
+```
+
+**Explanation:**
+
+-   `.Machine$double.eps` is the smallest possible difference that R can distinguish between two floating-point numbers.
+
+-   The default tolerance of `all.equal()` is `sqrt(.Machine$double.eps)`, but we can **adjust it manually** if needed.
+
+📖 **More details:** [The R Inferno](https://www.burns-stat.com/documents/books/the-r-inferno/)
+
+------------------------------------------------------------------------
+
+## Memory Allocation in R
+
+Memory management in R determines how objects are stored and how much space they occupy.
+**Understanding how R allocates memory** can help optimize performance, especially with large datasets.
+
+### **Example 5: Comparing Memory Usage of Integer and Double**
+
+```{r memory-allocation, echo=TRUE}
+x <- 5    # Stored as double
+obj_size(x)  
+```
+
+```{r memory-allocation2, echo=TRUE}
+y <- 5L   # Stored as integer
+obj_size(y) 
+```
+
+**Why are both `x` and `y` 56 bytes?**
+
+-   Even though `y` is an **integer (4 bytes)** and `x` is a **double (8 bytes)**, R adds metadata overhead.
+
+-   Every object in R carries around **48 bytes of metadata**, including type and reference count.
+
+-   Memory is aligned in **multiples of 8 bytes**, so the total allocation rounds up to 56 bytes.
+
+### **Example 6: Memory Usage for Large Vectors**
+
+```{r large-vector-memory, echo=TRUE}
+x_vec <- rep(5, 1000000)   # Double vector
+y_vec <- rep(5L, 1000000)  # Integer vector
+
+obj_size(x_vec)  # ~8 MB (each number is 8 bytes)
+obj_size(y_vec)  # ~4 MB (each number is 4 bytes)
+```
+
+**Why does the integer vector use half the memory?**
+
+-   Each **integer** (`5L`) takes **4 bytes per element**.
+
+-   Each **double** (`5`) takes **8 bytes per element**.
+
+-   For **large datasets**, using integers instead of doubles can **save significant memory**.
+
+### **Example 7: Type Conversion Affects Memory Usage**
+
+```{r memory-conversion, echo=TRUE}
+y_vec[2] = 5.0
+obj_size(y_vec)  # Changes due to type conversion
+
+new_vec = lapply(y_vec, as.integer)
+obj_size(new_vec) 
+
+new_vec[2] = 5.5
+new_vec[1:3]
+obj_size(new_vec) 
+```
+
+**Explanation:**
+
+-   Assigning `5.0` to `y_vec` **forces** R to convert the entire vector to **double**, increasing memory usage.
+
+-   `lapply(y_vec, as.integer)` converts the vector back to integers, reducing its size.
+
+-   But assigning `5.5` back **forces conversion to double again**.
+
+------------------------------------------------------------------------
+
+## Partial Matching in R
+
+R allows **partial matching** of list elements, which can lead to unintended behaviour and difficult-to-debug errors.
+
+### **Example 8: Partial Matching Works, But It’s Risky**
+
+```{r partial-matching, echo=TRUE}
+test_function <- function(alpha = NULL, power = NULL, p = NULL, p0 = NULL) {
+  user_defined <- list(alpha=alpha, power=power, p=p, p0=p0)
+  user_defined <- Filter(Negate(is.null), user_defined)
+  return(user_defined)
+}
+
+results = test_function(alpha=0.05, power=0.8)
+print(str(results))
+print(results$p)  # Partial matching
+```
+
+**Why is `results$p` returning `NULL`?**
+
+-   Because `p` was not provided in `test_function()`, but R still allows partial matching.
+
+### **Example 9: Unexpected Partial Matching in Lists**
+
+```{r unexpected-partial-match, echo=TRUE}
+x = list(data = 2, power = 10)
+x$p  # Partial matching: returns 10
+
+if (x$p == 10) cat("variable p == 10\n")
+
+# Avoiding partial matching
+options(warnPartialMatchDollar = TRUE)
+print(x$p)  # Now warns about partial matching
+
+print(x[["p"]])  # Explicit retrieval, avoiding unexpected matches
+```
+
+**Best Practices:**
+
+-   Use **`options(warnPartialMatchDollar = TRUE)`** to catch unintended partial matches.
+
+-   Always use **`x[["p"]]`** instead of `x$p` to ensure explicit matching.
+
+📖 **More details:** [Advanced R - Subsetting](https://adv-r.hadley.nz/subsetting.html?q=partial#section-1)
+
+------------------------------------------------------------------------
+
+```{r}
+#| include: false
+options(warnPartialMatchDollar = FALSE)
+```

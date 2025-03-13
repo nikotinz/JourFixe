@@ -1,0 +1,509 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss  xmlns:atom="http://www.w3.org/2005/Atom" 
+      xmlns:media="http://search.yahoo.com/mrss/" 
+      xmlns:content="http://purl.org/rss/1.0/modules/content/" 
+      xmlns:dc="http://purl.org/dc/elements/1.1/" 
+      version="2.0">
+<channel>
+<title>R for a Jour Fixe</title>
+<link>https://nikotinz.github.io/JourFixe/</link>
+<atom:link href="https://nikotinz.github.io/JourFixe/index.xml" rel="self" type="application/rss+xml"/>
+<description></description>
+<generator>quarto-1.5.56</generator>
+<lastBuildDate>Thu, 13 Mar 2025 00:00:00 GMT</lastBuildDate>
+<item>
+  <title>My Pain in R</title>
+  <dc:creator>Nikita M.</dc:creator>
+  <link>https://nikotinz.github.io/JourFixe/posts/March_2025/March2025.html</link>
+  <description><![CDATA[ 
+
+
+
+
+<section id="floating-point-precision-in-r" class="level2">
+<h2 class="anchored" data-anchor-id="floating-point-precision-in-r">Floating-Point Precision in R</h2>
+<p>Floating-point numbers in R are subject to precision limitations due to <a href="https://en.wikipedia.org/wiki/IEEE_754">IEEE 754</a> representation. This section explores how seemingly simple operations can lead to unexpected results.</p>
+<section id="example-1-floating-point-comparison-fails" class="level3">
+<h3 class="anchored" data-anchor-id="example-1-floating-point-comparison-fails"><strong>Example 1: Floating-Point Comparison Fails</strong></h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1">.<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> .<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">3</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">3</span></span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] FALSE</code></pre>
+</div>
+</div>
+<p><strong>Why does this return <code>FALSE</code>?</strong></p>
+<ul>
+<li><p>Due to how floating-point arithmetic works in computers, numbers like <code>0.1</code>, <code>0.3</code>, and <code>0.3 / 3</code> are stored in binary.</p></li>
+<li><p>Some decimal fractions <strong>cannot be represented exactly in binary</strong>, leading to tiny rounding errors.</p></li>
+<li><p>Even though mathematically <code>.1</code> and <code>.3 / 3</code> should be the same, their internal representations <strong>are not exactly equal</strong>.</p></li>
+</ul>
+</section>
+<section id="example-2-inspecting-the-actual-value-stored-in-memory" class="level3">
+<h3 class="anchored" data-anchor-id="example-2-inspecting-the-actual-value-stored-in-memory"><strong>Example 2: Inspecting the Actual Value Stored in Memory</strong></h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1">.<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">3</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">3</span></span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.1</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">print</span>(.<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">3</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">3</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">digits=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">16</span>)</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.09999999999999999</code></pre>
+</div>
+</div>
+<p><strong>Explanation:</strong></p>
+<ul>
+<li><p>The first output shows what R normally prints, which is rounded for display.</p></li>
+<li><p>The second output uses <code>digits=16</code> to show more of the <strong>actual stored precision</strong>.</p></li>
+<li><p>This reveals that <code>0.3 / 3</code> is actually stored as <code>0.09999999999999999</code>, <strong>not exactly</strong> <code>0.1</code>.</p></li>
+</ul>
+</section>
+<section id="example-3-using-all.equal-instead-of" class="level3">
+<h3 class="anchored" data-anchor-id="example-3-using-all.equal-instead-of"><strong>Example 3: Using <code>all.equal()</code> Instead of <code>==</code></strong></h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">all.equal</span>(.<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>, .<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">3</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">3</span>)</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] TRUE</code></pre>
+</div>
+</div>
+<p><strong>Why does this return <code>TRUE</code>?</strong></p>
+<ul>
+<li><p><code>all.equal()</code> does not check for <strong>exact</strong> equality but allows a <strong>small tolerance</strong> to account for floating-point errors.</p></li>
+<li><p>It is the <strong>preferred way</strong> to compare floating-point numbers in R.</p></li>
+</ul>
+</section>
+<section id="example-4-machine-epsilon-adjusting-tolerance" class="level3">
+<h3 class="anchored" data-anchor-id="example-4-machine-epsilon-adjusting-tolerance"><strong>Example 4: Machine Epsilon &amp; Adjusting Tolerance</strong></h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1">.Machine<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>double.eps</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 2.220446e-16</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb11" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">all.equal</span>(.<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>, .<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">3</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">3</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">tolerance =</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2.2e-17</span>)</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "Mean relative difference: 1.387779e-16"</code></pre>
+</div>
+</div>
+<p><strong>Explanation:</strong></p>
+<ul>
+<li><p><code>.Machine$double.eps</code> is the smallest possible difference that R can distinguish between two floating-point numbers.</p></li>
+<li><p>The default tolerance of <code>all.equal()</code> is <code>sqrt(.Machine$double.eps)</code>, but we can <strong>adjust it manually</strong> if needed.</p></li>
+</ul>
+<p>📖 <strong>More details:</strong> <a href="https://www.burns-stat.com/documents/books/the-r-inferno/">The R Inferno</a></p>
+<hr>
+</section>
+</section>
+<section id="memory-allocation-in-r" class="level2">
+<h2 class="anchored" data-anchor-id="memory-allocation-in-r">Memory Allocation in R</h2>
+<p>Memory management in R determines how objects are stored and how much space they occupy. <strong>Understanding how R allocates memory</strong> can help optimize performance, especially with large datasets.</p>
+<section id="example-5-comparing-memory-usage-of-integer-and-double" class="level3">
+<h3 class="anchored" data-anchor-id="example-5-comparing-memory-usage-of-integer-and-double"><strong>Example 5: Comparing Memory Usage of Integer and Double</strong></h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb13" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1">x <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">5</span>    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Stored as double</span></span>
+<span id="cb13-2"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">obj_size</span>(x)  </span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>56 B</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb15" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1">y <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">5</span>L   <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Stored as integer</span></span>
+<span id="cb15-2"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">obj_size</span>(y) </span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>56 B</code></pre>
+</div>
+</div>
+<p><strong>Why are both <code>x</code> and <code>y</code> 56 bytes?</strong></p>
+<ul>
+<li><p>Even though <code>y</code> is an <strong>integer (4 bytes)</strong> and <code>x</code> is a <strong>double (8 bytes)</strong>, R adds metadata overhead.</p></li>
+<li><p>Every object in R carries around <strong>48 bytes of metadata</strong>, including type and reference count.</p></li>
+<li><p>Memory is aligned in <strong>multiples of 8 bytes</strong>, so the total allocation rounds up to 56 bytes.</p></li>
+</ul>
+</section>
+<section id="example-6-memory-usage-for-large-vectors" class="level3">
+<h3 class="anchored" data-anchor-id="example-6-memory-usage-for-large-vectors"><strong>Example 6: Memory Usage for Large Vectors</strong></h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb17" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1">x_vec <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">rep</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">5</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1000000</span>)   <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Double vector</span></span>
+<span id="cb17-2">y_vec <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">rep</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">5</span>L, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1000000</span>)  <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Integer vector</span></span>
+<span id="cb17-3"></span>
+<span id="cb17-4"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">obj_size</span>(x_vec)  <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># ~8 MB (each number is 8 bytes)</span></span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>8.00 MB</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb19" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">obj_size</span>(y_vec)  <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># ~4 MB (each number is 4 bytes)</span></span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>4.00 MB</code></pre>
+</div>
+</div>
+<p><strong>Why does the integer vector use half the memory?</strong></p>
+<ul>
+<li><p>Each <strong>integer</strong> (<code>5L</code>) takes <strong>4 bytes per element</strong>.</p></li>
+<li><p>Each <strong>double</strong> (<code>5</code>) takes <strong>8 bytes per element</strong>.</p></li>
+<li><p>For <strong>large datasets</strong>, using integers instead of doubles can <strong>save significant memory</strong>.</p></li>
+</ul>
+</section>
+<section id="example-7-type-conversion-affects-memory-usage" class="level3">
+<h3 class="anchored" data-anchor-id="example-7-type-conversion-affects-memory-usage"><strong>Example 7: Type Conversion Affects Memory Usage</strong></h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb21" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1">y_vec[<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span>] <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">=</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">5.0</span></span>
+<span id="cb21-2"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">obj_size</span>(y_vec)  <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Changes due to type conversion</span></span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>8.00 MB</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb23" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1">new_vec <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">=</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">lapply</span>(y_vec, as.integer)</span>
+<span id="cb23-2"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">obj_size</span>(new_vec) </span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>64.00 MB</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb25" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1">new_vec[<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span>] <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">=</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">5.5</span></span>
+<span id="cb25-2">new_vec[<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">3</span>]</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[[1]]
+[1] 5
+
+[[2]]
+[1] 5.5
+
+[[3]]
+[1] 5</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb27" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">obj_size</span>(new_vec) </span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>64.00 MB</code></pre>
+</div>
+</div>
+<p><strong>Explanation:</strong></p>
+<ul>
+<li><p>Assigning <code>5.0</code> to <code>y_vec</code> <strong>forces</strong> R to convert the entire vector to <strong>double</strong>, increasing memory usage.</p></li>
+<li><p><code>lapply(y_vec, as.integer)</code> converts the vector back to integers, reducing its size.</p></li>
+<li><p>But assigning <code>5.5</code> back <strong>forces conversion to double again</strong>.</p></li>
+</ul>
+<hr>
+</section>
+</section>
+<section id="partial-matching-in-r" class="level2">
+<h2 class="anchored" data-anchor-id="partial-matching-in-r">Partial Matching in R</h2>
+<p>R allows <strong>partial matching</strong> of list elements, which can lead to unintended behaviour and difficult-to-debug errors.</p>
+<section id="example-8-partial-matching-works-but-its-risky" class="level3">
+<h3 class="anchored" data-anchor-id="example-8-partial-matching-works-but-its-risky"><strong>Example 8: Partial Matching Works, But It’s Risky</strong></h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb29" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1">test_function <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">function</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">alpha =</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">NULL</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">power =</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">NULL</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">p =</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">NULL</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">p0 =</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">NULL</span>) {</span>
+<span id="cb29-2">  user_defined <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">list</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">alpha=</span>alpha, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">power=</span>power, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">p=</span>p, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">p0=</span>p0)</span>
+<span id="cb29-3">  user_defined <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">Filter</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">Negate</span>(is.null), user_defined)</span>
+<span id="cb29-4">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">return</span>(user_defined)</span>
+<span id="cb29-5">}</span>
+<span id="cb29-6"></span>
+<span id="cb29-7">results <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">=</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">test_function</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">alpha=</span><span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.05</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">power=</span><span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.8</span>)</span>
+<span id="cb29-8"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">print</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">str</span>(results))</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>List of 2
+ $ alpha: num 0.05
+ $ power: num 0.8
+NULL</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb31" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">print</span>(results<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>p)  <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Partial matching</span></span></code></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in results$p: partial match of 'p' to 'power'</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.8</code></pre>
+</div>
+</div>
+<p><strong>Why is <code>results$p</code> returning <code>NULL</code>?</strong></p>
+<ul>
+<li>Because <code>p</code> was not provided in <code>test_function()</code>, but R still allows partial matching.</li>
+</ul>
+</section>
+<section id="example-9-unexpected-partial-matching-in-lists" class="level3">
+<h3 class="anchored" data-anchor-id="example-9-unexpected-partial-matching-in-lists"><strong>Example 9: Unexpected Partial Matching in Lists</strong></h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb34" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1">x <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">=</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">list</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">data =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">power =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">10</span>)</span>
+<span id="cb34-2">x<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>p  <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Partial matching: returns 10</span></span></code></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in x$p: partial match of 'p' to 'power'</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 10</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb37" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">if</span> (x<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>p <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">10</span>) <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">cat</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"variable p == 10</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span>)</span></code></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in x$p: partial match of 'p' to 'power'</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>variable p == 10</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb40" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Avoiding partial matching</span></span>
+<span id="cb40-2"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">options</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">warnPartialMatchDollar =</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">TRUE</span>)</span>
+<span id="cb40-3"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">print</span>(x<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>p)  <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Now warns about partial matching</span></span></code></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in x$p: partial match of 'p' to 'power'</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 10</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb43" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">print</span>(x[[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"p"</span>]])  <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Explicit retrieval, avoiding unexpected matches</span></span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>NULL</code></pre>
+</div>
+</div>
+<p><strong>Best Practices:</strong></p>
+<ul>
+<li><p>Use <strong><code>options(warnPartialMatchDollar = TRUE)</code></strong> to catch unintended partial matches.</p></li>
+<li><p>Always use <strong><code>x[["p"]]</code></strong> instead of <code>x$p</code> to ensure explicit matching.</p></li>
+</ul>
+<p>📖 <strong>More details:</strong> <a href="https://adv-r.hadley.nz/subsetting.html?q=partial#section-1">Advanced R - Subsetting</a></p>
+<hr>
+
+
+</section>
+</section>
+
+ ]]></description>
+  <category>R-tips</category>
+  <guid>https://nikotinz.github.io/JourFixe/posts/March_2025/March2025.html</guid>
+  <pubDate>Thu, 13 Mar 2025 00:00:00 GMT</pubDate>
+</item>
+</channel>
+</rss>
