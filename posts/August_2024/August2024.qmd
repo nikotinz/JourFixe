@@ -31,10 +31,9 @@ Efficient execution of computational tasks ensures that R processes run **withou
 
 ### **Example 1: Running an Iterative Task in the Background**
 
-Background jobs allow **long-running computations** to execute independently, 
-freeing the **R console** for other tasks.  
+Background jobs allow **long-running computations** to execute independently, freeing the **R console** for other tasks.
 
-::::: columns
+:::::: columns
 ::: {.column width="55%"}
 ``` r
 library(dplyr)
@@ -58,13 +57,16 @@ for(i in 1:15) {
 cat("Background job completed.\n")
 ```
 :::
+
 ::: {.column width="5%"}
 :::
+
 ::: {.column width="40%"}
 #### 
+
 ![](media/bg_job_settings.png){.lightbox}
 :::
-:::::
+::::::
 
 ### **Explanation:**
 
@@ -154,7 +156,7 @@ foo(10)
 
 Using parallel computing **significantly reduces execution time**.
 
-::::: columns
+:::::: columns
 ::: {.column width="45%"}
 #### **Regular `for()` Loop**
 
@@ -166,9 +168,10 @@ for (i in 1:1000) {
 }
 ```
 :::
-::: {.column width="5%"}
 
+::: {.column width="5%"}
 :::
+
 ::: {.column width="50%"}
 #### **Parallelised `foreach()` Loop**
 
@@ -186,7 +189,7 @@ result <- foreach(i = 1:1000, .combine = 'c') %dopar% {
 stopCluster(cl)
 ```
 :::
-:::::
+::::::
 
 ### **Explanation:**
 

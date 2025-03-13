@@ -160,11 +160,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#explanation" id="toc-explanation" class="nav-link" data-scroll-target="#explanation"><strong>Explanation:</strong></a></li>
   </ul></li>
   <li><a href="#responsible-use-of-resources" id="toc-responsible-use-of-resources" class="nav-link" data-scroll-target="#responsible-use-of-resources">Responsible Use of Resources</a></li>
-  <li><a href="#code-optimization-in-r" id="toc-code-optimization-in-r" class="nav-link" data-scroll-target="#code-optimization-in-r">Code Optimization in R</a>
+  <li><a href="#code-optimisation-in-r" id="toc-code-optimisation-in-r" class="nav-link" data-scroll-target="#code-optimisation-in-r">Code Optimisation in R</a>
   <ul class="collapse">
   <li><a href="#profiling-computational-performance" id="toc-profiling-computational-performance" class="nav-link" data-scroll-target="#profiling-computational-performance">Profiling Computational Performance</a>
   <ul class="collapse">
-  <li><a href="#example-2-using-profvis-to-analyze-execution-time" id="toc-example-2-using-profvis-to-analyze-execution-time" class="nav-link" data-scroll-target="#example-2-using-profvis-to-analyze-execution-time"><strong>Example 2: Using <code>profvis()</code> to Analyze Execution Time</strong></a></li>
+  <li><a href="#example-2-using-profvis-to-analyse-execution-time" id="toc-example-2-using-profvis-to-analyse-execution-time" class="nav-link" data-scroll-target="#example-2-using-profvis-to-analyse-execution-time"><strong>Example 2: Using <code>profvis()</code> to Analyse Execution Time</strong></a></li>
   <li><a href="#explanation-1" id="toc-explanation-1" class="nav-link" data-scroll-target="#explanation-1"><strong>Explanation:</strong></a></li>
   </ul></li>
   <li><a href="#debugging-r-code" id="toc-debugging-r-code" class="nav-link" data-scroll-target="#debugging-r-code">Debugging R Code</a>
@@ -172,9 +172,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#example-3-using-browser-for-step-by-step-debugging" id="toc-example-3-using-browser-for-step-by-step-debugging" class="nav-link" data-scroll-target="#example-3-using-browser-for-step-by-step-debugging"><strong>Example 3: Using <code>browser()</code> for Step-by-Step Debugging</strong></a></li>
   <li><a href="#explanation-2" id="toc-explanation-2" class="nav-link" data-scroll-target="#explanation-2"><strong>Explanation:</strong></a></li>
   </ul></li>
-  <li><a href="#parallelization-in-r" id="toc-parallelization-in-r" class="nav-link" data-scroll-target="#parallelization-in-r">Parallelization in R</a>
+  <li><a href="#parallelisation-in-r" id="toc-parallelisation-in-r" class="nav-link" data-scroll-target="#parallelisation-in-r">Parallelisation in R</a>
   <ul class="collapse">
-  <li><a href="#example-4-parallelizing-loops-with-foreach" id="toc-example-4-parallelizing-loops-with-foreach" class="nav-link" data-scroll-target="#example-4-parallelizing-loops-with-foreach"><strong>Example 4: Parallelizing Loops with <code>foreach</code></strong></a></li>
+  <li><a href="#example-4-parallelising-loops-with-foreach" id="toc-example-4-parallelising-loops-with-foreach" class="nav-link" data-scroll-target="#example-4-parallelising-loops-with-foreach"><strong>Example 4: Parallelising Loops with <code>foreach</code></strong></a></li>
   <li><a href="#explanation-3" id="toc-explanation-3" class="nav-link" data-scroll-target="#explanation-3"><strong>Explanation:</strong></a></li>
   <li><a href="#conclusion" id="toc-conclusion" class="nav-link" data-scroll-target="#conclusion"><strong>Conclusion</strong></a></li>
   </ul></li>
@@ -226,11 +226,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <section id="motivation" class="level2">
 <h2 class="anchored" data-anchor-id="motivation">Motivation</h2>
-<p>Running computationally expensive tasks in R can be challenging, especially when working with <strong>large datasets</strong> and <strong>intensive operations</strong>. This article provides <strong>practical strategies</strong> for efficiently handling background jobs, optimizing performance, debugging, and leveraging parallelization.</p>
+<p>Running computationally expensive tasks in R can be challenging, especially when working with <strong>large datasets</strong> and <strong>intensive operations</strong>. This article provides <strong>practical strategies</strong> for efficiently handling background jobs, optimising performance, debugging, and leveraging parallelisation.</p>
 </section>
 <section id="addressing" class="level2">
 <h2 class="anchored" data-anchor-id="addressing">Addressing</h2>
-<p>Efficient execution of computational tasks ensures that R processes run <strong>without blocking user interaction</strong>, effectively utilizing system resources. The <strong>pyramid framework</strong> below illustrates the <strong>layers of computational efficiency</strong> in R programming.</p>
+<p>Efficient execution of computational tasks ensures that R processes run <strong>without blocking user interaction</strong>, effectively utilising system resources. The <strong>pyramid framework</strong> below illustrates the <strong>layers of computational efficiency</strong> in R programming.</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><img src="media/pyramid.png" class="img-fluid quarto-figure quarto-figure-center figure-img"></p>
@@ -293,13 +293,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>📌 <strong>Best Practice:</strong> Use <strong>resource monitoring tools</strong> (<code>top</code>, <code>htop</code>) to check CPU usage before launching intensive computations.</p>
 <hr>
 </section>
-<section id="code-optimization-in-r" class="level1">
-<h1>Code Optimization in R</h1>
+<section id="code-optimisation-in-r" class="level1">
+<h1>Code Optimisation in R</h1>
 <section id="profiling-computational-performance" class="level2">
 <h2 class="anchored" data-anchor-id="profiling-computational-performance">Profiling Computational Performance</h2>
-<p>Understanding where <strong>R code spends most of its execution time</strong> helps optimize functions.</p>
-<section id="example-2-using-profvis-to-analyze-execution-time" class="level3">
-<h3 class="anchored" data-anchor-id="example-2-using-profvis-to-analyze-execution-time"><strong>Example 2: Using <code>profvis()</code> to Analyze Execution Time</strong></h3>
+<p>Understanding where <strong>R code spends most of its execution time</strong> helps optimise functions.</p>
+<section id="example-2-using-profvis-to-analyse-execution-time" class="level3">
+<h3 class="anchored" data-anchor-id="example-2-using-profvis-to-analyse-execution-time"><strong>Example 2: Using <code>profvis()</code> to Analyse Execution Time</strong></h3>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(profvis)</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>function_1 <span class="ot">&lt;-</span> <span class="cf">function</span>(size) {</span>
@@ -324,8 +324,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="explanation-1" class="level3">
 <h3 class="anchored" data-anchor-id="explanation-1"><strong>Explanation:</strong></h3>
 <ul>
-<li><code>profvis()</code> visualizes <strong>where time is spent</strong> in an R script.</li>
-<li>Helps identify <strong>slow functions</strong> and optimize code for <strong>better efficiency</strong>.</li>
+<li><code>profvis()</code> visualises <strong>where time is spent</strong> in an R script.</li>
+<li>Helps identify <strong>slow functions</strong> and optimise code for <strong>better efficiency</strong>.</li>
 </ul>
 <p><a href="media/profvis.png" class="lightbox" data-gallery="quarto-lightbox-gallery-3"><img src="media/profvis.png" class="img-fluid"></a></p>
 <hr>
@@ -352,10 +352,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <hr>
 </section>
 </section>
-<section id="parallelization-in-r" class="level2">
-<h2 class="anchored" data-anchor-id="parallelization-in-r">Parallelization in R</h2>
-<section id="example-4-parallelizing-loops-with-foreach" class="level3">
-<h3 class="anchored" data-anchor-id="example-4-parallelizing-loops-with-foreach"><strong>Example 4: Parallelizing Loops with <code>foreach</code></strong></h3>
+<section id="parallelisation-in-r" class="level2">
+<h2 class="anchored" data-anchor-id="parallelisation-in-r">Parallelisation in R</h2>
+<section id="example-4-parallelising-loops-with-foreach" class="level3">
+<h3 class="anchored" data-anchor-id="example-4-parallelising-loops-with-foreach"><strong>Example 4: Parallelising Loops with <code>foreach</code></strong></h3>
 <p>Using parallel computing <strong>significantly reduces execution time</strong>.</p>
 <div class="columns">
 <div class="column" style="width:45%;">
@@ -370,8 +370,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div><div class="column" style="width:5%;">
 
 </div><div class="column" style="width:50%;">
-<section id="parallelized-foreach-loop" class="level4">
-<h4 class="anchored" data-anchor-id="parallelized-foreach-loop"><strong>Parallelized <code>foreach()</code> Loop</strong></h4>
+<section id="parallelised-foreach-loop" class="level4">
+<h4 class="anchored" data-anchor-id="parallelised-foreach-loop"><strong>Parallelised <code>foreach()</code> Loop</strong></h4>
 <div class="sourceCode" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(foreach)</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(doParallel)</span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -828,7 +828,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 });
 </script>
 </div> <!-- /content -->
-<script>var lightboxQuarto = GLightbox({"loop":false,"closeEffect":"zoom","openEffect":"zoom","descPosition":"bottom","selector":".lightbox"});
+<script>var lightboxQuarto = GLightbox({"selector":".lightbox","closeEffect":"zoom","loop":false,"descPosition":"bottom","openEffect":"zoom"});
 (function() {
   let previousOnload = window.onload;
   window.onload = () => {

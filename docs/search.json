@@ -46,21 +46,21 @@
     "href": "posts/August_2024/August2024.html",
     "title": "Running R Computational Tasks",
     "section": "",
-    "text": "Running computationally expensive tasks in R can be challenging, especially when working with large datasets and intensive operations. This article provides practical strategies for efficiently handling background jobs, optimizing performance, debugging, and leveraging parallelization."
+    "text": "Running computationally expensive tasks in R can be challenging, especially when working with large datasets and intensive operations. This article provides practical strategies for efficiently handling background jobs, optimising performance, debugging, and leveraging parallelisation."
   },
   {
     "objectID": "posts/August_2024/August2024.html#motivation",
     "href": "posts/August_2024/August2024.html#motivation",
     "title": "Running R Computational Tasks",
     "section": "",
-    "text": "Running computationally expensive tasks in R can be challenging, especially when working with large datasets and intensive operations. This article provides practical strategies for efficiently handling background jobs, optimizing performance, debugging, and leveraging parallelization."
+    "text": "Running computationally expensive tasks in R can be challenging, especially when working with large datasets and intensive operations. This article provides practical strategies for efficiently handling background jobs, optimising performance, debugging, and leveraging parallelisation."
   },
   {
     "objectID": "posts/August_2024/August2024.html#addressing",
     "href": "posts/August_2024/August2024.html#addressing",
     "title": "Running R Computational Tasks",
     "section": "Addressing",
-    "text": "Addressing\nEfficient execution of computational tasks ensures that R processes run without blocking user interaction, effectively utilizing system resources. The pyramid framework below illustrates the layers of computational efficiency in R programming.\n\n\n\n\n\nSource: Selina Baldauf"
+    "text": "Addressing\nEfficient execution of computational tasks ensures that R processes run without blocking user interaction, effectively utilising system resources. The pyramid framework below illustrates the layers of computational efficiency in R programming.\n\n\n\n\n\nSource: Selina Baldauf"
   },
   {
     "objectID": "posts/August_2024/August2024.html#running-background-jobs",
@@ -116,7 +116,7 @@
     "href": "posts/August_2024/August2024.html#profiling-computational-performance",
     "title": "Running R Computational Tasks",
     "section": "Profiling Computational Performance",
-    "text": "Profiling Computational Performance\nUnderstanding where R code spends most of its execution time helps optimize functions.\n\nExample 2: Using profvis() to Analyze Execution Time\nlibrary(profvis)\n\nfunction_1 &lt;- function(size) {\n  large_list &lt;- lapply(1:size, function(x) rnorm(5000))\n  return(large_list)\n}\n\nfunction_2 &lt;- function(iterations) {\n  result &lt;- 0\n  for (i in 1:iterations) {\n    Sys.sleep(0.1) \n    result &lt;- result + i\n  }\n  return(result)\n}\n\nprofvis({\n  function_1(10000)\n  function_2(30)\n})\n\n\nExplanation:\n\nprofvis() visualizes where time is spent in an R script.\nHelps identify slow functions and optimize code for better efficiency."
+    "text": "Profiling Computational Performance\nUnderstanding where R code spends most of its execution time helps optimise functions.\n\nExample 2: Using profvis() to Analyse Execution Time\nlibrary(profvis)\n\nfunction_1 &lt;- function(size) {\n  large_list &lt;- lapply(1:size, function(x) rnorm(5000))\n  return(large_list)\n}\n\nfunction_2 &lt;- function(iterations) {\n  result &lt;- 0\n  for (i in 1:iterations) {\n    Sys.sleep(0.1) \n    result &lt;- result + i\n  }\n  return(result)\n}\n\nprofvis({\n  function_1(10000)\n  function_2(30)\n})\n\n\nExplanation:\n\nprofvis() visualises where time is spent in an R script.\nHelps identify slow functions and optimise code for better efficiency."
   },
   {
     "objectID": "posts/August_2024/August2024.html#debugging-r-code",
