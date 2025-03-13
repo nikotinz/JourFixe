@@ -1,5 +1,5 @@
 ---
-title: "Общие показатели межстранового сравнения"
+title: "R tips March 2025"
 author: "Nikita M."
 format:
   html:
