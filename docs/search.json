@@ -2,30 +2,30 @@
   {
     "objectID": "posts/March_2025/March2025.html",
     "href": "posts/March_2025/March2025.html",
-    "title": "My Pain in R",
+    "title": "R tips March 2025",
     "section": "",
     "text": "Floating-point numbers in R are subject to precision limitations due to IEEE 754 representation. This section explores how seemingly simple operations can lead to unexpected results.\n\n\n\n.1 == .3 / 3\n\n[1] FALSE\n\n\nWhy does this return FALSE?\n\nDue to how floating-point arithmetic works in computers, numbers like 0.1, 0.3, and 0.3 / 3 are stored in binary.\nSome decimal fractions cannot be represented exactly in binary, leading to tiny rounding errors.\nEven though mathematically .1 and .3 / 3 should be the same, their internal representations are not exactly equal.\n\n\n\n\n\n.3 / 3\n\n[1] 0.1\n\nprint(.3 / 3, digits=16)\n\n[1] 0.09999999999999999\n\n\nExplanation:\n\nThe first output shows what R normally prints, which is rounded for display.\nThe second output uses digits=16 to show more of the actual stored precision.\nThis reveals that 0.3 / 3 is actually stored as 0.09999999999999999, not exactly 0.1.\n\n\n\n\n\nall.equal(.1, .3 / 3)\n\n[1] TRUE\n\n\nWhy does this return TRUE?\n\nall.equal() does not check for exact equality but allows a small tolerance to account for floating-point errors.\nIt is the preferred way to compare floating-point numbers in R.\n\n\n\n\n\n.Machine$double.eps\n\n[1] 2.220446e-16\n\nall.equal(.1, .3 / 3, tolerance = 2.2e-17)\n\n[1] \"Mean relative difference: 1.387779e-16\"\n\n\nExplanation:\n\n.Machine$double.eps is the smallest possible difference that R can distinguish between two floating-point numbers.\nThe default tolerance of all.equal() is sqrt(.Machine$double.eps), but we can adjust it manually if needed.\n\n📖 More details: The R Inferno"
   },
   {
     "objectID": "posts/March_2025/March2025.html#floating-point-precision-in-r",
     "href": "posts/March_2025/March2025.html#floating-point-precision-in-r",
-    "title": "My Pain in R",
+    "title": "R tips March 2025",
     "section": "",
     "text": "Floating-point numbers in R are subject to precision limitations due to IEEE 754 representation. This section explores how seemingly simple operations can lead to unexpected results.\n\n\n\n.1 == .3 / 3\n\n[1] FALSE\n\n\nWhy does this return FALSE?\n\nDue to how floating-point arithmetic works in computers, numbers like 0.1, 0.3, and 0.3 / 3 are stored in binary.\nSome decimal fractions cannot be represented exactly in binary, leading to tiny rounding errors.\nEven though mathematically .1 and .3 / 3 should be the same, their internal representations are not exactly equal.\n\n\n\n\n\n.3 / 3\n\n[1] 0.1\n\nprint(.3 / 3, digits=16)\n\n[1] 0.09999999999999999\n\n\nExplanation:\n\nThe first output shows what R normally prints, which is rounded for display.\nThe second output uses digits=16 to show more of the actual stored precision.\nThis reveals that 0.3 / 3 is actually stored as 0.09999999999999999, not exactly 0.1.\n\n\n\n\n\nall.equal(.1, .3 / 3)\n\n[1] TRUE\n\n\nWhy does this return TRUE?\n\nall.equal() does not check for exact equality but allows a small tolerance to account for floating-point errors.\nIt is the preferred way to compare floating-point numbers in R.\n\n\n\n\n\n.Machine$double.eps\n\n[1] 2.220446e-16\n\nall.equal(.1, .3 / 3, tolerance = 2.2e-17)\n\n[1] \"Mean relative difference: 1.387779e-16\"\n\n\nExplanation:\n\n.Machine$double.eps is the smallest possible difference that R can distinguish between two floating-point numbers.\nThe default tolerance of all.equal() is sqrt(.Machine$double.eps), but we can adjust it manually if needed.\n\n📖 More details: The R Inferno"
   },
   {
     "objectID": "posts/March_2025/March2025.html#memory-allocation-in-r",
     "href": "posts/March_2025/March2025.html#memory-allocation-in-r",
-    "title": "My Pain in R",
+    "title": "R tips March 2025",
     "section": "Memory Allocation in R",
     "text": "Memory Allocation in R\nMemory management in R determines how objects are stored and how much space they occupy. Understanding how R allocates memory can help optimize performance, especially with large datasets.\n\nExample 5: Comparing Memory Usage of Integer and Double\n\nx &lt;- 5    # Stored as double\nobj_size(x)  \n\n56 B\n\n\n\ny &lt;- 5L   # Stored as integer\nobj_size(y) \n\n56 B\n\n\nWhy are both x and y 56 bytes?\n\nEven though y is an integer (4 bytes) and x is a double (8 bytes), R adds metadata overhead.\nEvery object in R carries around 48 bytes of metadata, including type and reference count.\nMemory is aligned in multiples of 8 bytes, so the total allocation rounds up to 56 bytes.\n\n\n\nExample 6: Memory Usage for Large Vectors\n\nx_vec &lt;- rep(5, 1000000)   # Double vector\ny_vec &lt;- rep(5L, 1000000)  # Integer vector\n\nobj_size(x_vec)  # ~8 MB (each number is 8 bytes)\n\n8.00 MB\n\nobj_size(y_vec)  # ~4 MB (each number is 4 bytes)\n\n4.00 MB\n\n\nWhy does the integer vector use half the memory?\n\nEach integer (5L) takes 4 bytes per element.\nEach double (5) takes 8 bytes per element.\nFor large datasets, using integers instead of doubles can save significant memory.\n\n\n\nExample 7: Type Conversion Affects Memory Usage\n\ny_vec[2] = 5.0\nobj_size(y_vec)  # Changes due to type conversion\n\n8.00 MB\n\nnew_vec = lapply(y_vec, as.integer)\nobj_size(new_vec) \n\n64.00 MB\n\nnew_vec[2] = 5.5\nnew_vec[1:3]\n\n[[1]]\n[1] 5\n\n[[2]]\n[1] 5.5\n\n[[3]]\n[1] 5\n\nobj_size(new_vec) \n\n64.00 MB\n\n\nExplanation:\n\nAssigning 5.0 to y_vec forces R to convert the entire vector to double, increasing memory usage.\nlapply(y_vec, as.integer) converts the vector back to integers, reducing its size.\nBut assigning 5.5 back forces conversion to double again."
   },
   {
     "objectID": "posts/March_2025/March2025.html#partial-matching-in-r",
     "href": "posts/March_2025/March2025.html#partial-matching-in-r",
-    "title": "My Pain in R",
+    "title": "R tips March 2025",
     "section": "Partial Matching in R",
-    "text": "Partial Matching in R\nR allows partial matching of list elements, which can lead to unintended behaviour and difficult-to-debug errors.\n\nExample 8: Partial Matching Works, But It’s Risky\n\ntest_function &lt;- function(alpha = NULL, power = NULL, p = NULL, p0 = NULL) {\n  user_defined &lt;- list(alpha=alpha, power=power, p=p, p0=p0)\n  user_defined &lt;- Filter(Negate(is.null), user_defined)\n  return(user_defined)\n}\n\nresults = test_function(alpha=0.05, power=0.8)\nprint(str(results))\n\nList of 2\n $ alpha: num 0.05\n $ power: num 0.8\nNULL\n\nprint(results$p)  # Partial matching\n\nWarning in results$p: partial match of 'p' to 'power'\n\n\n[1] 0.8\n\n\nWhy is results$p returning NULL?\n\nBecause p was not provided in test_function(), but R still allows partial matching.\n\n\n\nExample 9: Unexpected Partial Matching in Lists\n\nx = list(data = 2, power = 10)\nx$p  # Partial matching: returns 10\n\nWarning in x$p: partial match of 'p' to 'power'\n\n\n[1] 10\n\nif (x$p == 10) cat(\"variable p == 10\\n\")\n\nWarning in x$p: partial match of 'p' to 'power'\n\n\nvariable p == 10\n\n# Avoiding partial matching\noptions(warnPartialMatchDollar = TRUE)\nprint(x$p)  # Now warns about partial matching\n\nWarning in x$p: partial match of 'p' to 'power'\n\n\n[1] 10\n\nprint(x[[\"p\"]])  # Explicit retrieval, avoiding unexpected matches\n\nNULL\n\n\nBest Practices:\n\nUse options(warnPartialMatchDollar = TRUE) to catch unintended partial matches.\nAlways use x[[\"p\"]] instead of x$p to ensure explicit matching.\n\n📖 More details: Advanced R - Subsetting"
+    "text": "Partial Matching in R\nR allows partial matching of list elements, which can lead to unintended behaviour and difficult-to-debug errors.\n\nExample 8: Partial Matching Works, But It’s Risky\n\ntest_function &lt;- function(alpha = NULL, power = NULL, p = NULL, p0 = NULL) {\n  user_defined &lt;- list(alpha=alpha, power=power, p=p, p0=p0)\n  user_defined &lt;- Filter(Negate(is.null), user_defined)\n  return(user_defined)\n}\n\nresults = test_function(alpha=0.05, power=0.8)\nprint(str(results))\n\nList of 2\n $ alpha: num 0.05\n $ power: num 0.8\nNULL\n\nprint(results$p)  # Partial matching\n\n[1] 0.8\n\n\nWhy is results$p returning NULL?\n\nBecause p was not provided in test_function(), but R still allows partial matching.\n\n\n\nExample 9: Unexpected Partial Matching in Lists\n\nx = list(data = 2, power = 10)\nx$p  # Partial matching: returns 10\n\n[1] 10\n\nif (x$p == 10) cat(\"variable p == 10\\n\")\n\nvariable p == 10\n\n# Avoiding partial matching\noptions(warnPartialMatchDollar = TRUE)\nprint(x$p)  # Now warns about partial matching\n\nWarning in x$p: partial match of 'p' to 'power'\n\n\n[1] 10\n\nprint(x[[\"p\"]])  # Explicit retrieval, avoiding unexpected matches\n\nNULL\n\n\nBest Practices:\n\nUse options(warnPartialMatchDollar = TRUE) to catch unintended partial matches.\nAlways use x[[\"p\"]] instead of x$p to ensure explicit matching.\n\n📖 More details: Advanced R - Subsetting"
   },
   {
     "objectID": "about.html",
@@ -39,6 +39,104 @@
     "href": "index.html",
     "title": "R for a Jour Fixe",
     "section": "",
-    "text": "R tips March 2025\n\n\n\n\n\n\nR-tips\n\n\n\n\n\n\n\n\n\nMar 13, 2025\n\n\nNikita M.\n\n\n\n\n\n\nNo matching items"
+    "text": "R tips March 2025\n\n\n\n\n\n\nR-tips\n\n\n\nExploring floating-point precision, memory allocation, and partial matching in R; insights and explanations to help avoid common pitfalls in coding.\n\n\n\n\n\nMar 13, 2025\n\n\nNikita M.\n\n\n\n\n\n\n\n\n\n\n\n\nRunning R Computational Tasks\n\n\n\n\n\n\nR-tips\n\n\n\nExploring efficient ways to run computational tasks in R, from background jobs to profiling, debugging, and parallelisation, with practical tips and examples.\n\n\n\n\n\nAug 22, 2024\n\n\nNikita M.\n\n\n\n\n\n\nNo matching items"
+  },
+  {
+    "objectID": "posts/August_2024/August2024.html",
+    "href": "posts/August_2024/August2024.html",
+    "title": "Running R Computational Tasks",
+    "section": "",
+    "text": "Running computationally expensive tasks in R can be challenging, especially when working with large datasets and intensive operations. This article provides practical strategies for efficiently handling background jobs, optimizing performance, debugging, and leveraging parallelization."
+  },
+  {
+    "objectID": "posts/August_2024/August2024.html#motivation",
+    "href": "posts/August_2024/August2024.html#motivation",
+    "title": "Running R Computational Tasks",
+    "section": "",
+    "text": "Running computationally expensive tasks in R can be challenging, especially when working with large datasets and intensive operations. This article provides practical strategies for efficiently handling background jobs, optimizing performance, debugging, and leveraging parallelization."
+  },
+  {
+    "objectID": "posts/August_2024/August2024.html#addressing",
+    "href": "posts/August_2024/August2024.html#addressing",
+    "title": "Running R Computational Tasks",
+    "section": "Addressing",
+    "text": "Addressing\nEfficient execution of computational tasks ensures that R processes run without blocking user interaction, effectively utilizing system resources. The pyramid framework below illustrates the layers of computational efficiency in R programming.\n\n\n\n\n\nSource: Selina Baldauf"
+  },
+  {
+    "objectID": "posts/August_2024/August2024.html#running-background-jobs",
+    "href": "posts/August_2024/August2024.html#running-background-jobs",
+    "title": "Running R computational tasks",
+    "section": "Running background jobs",
+    "text": "Running background jobs\n\n\nlibrary(dplyr)\n\n# Simulate a large dataset\nset.seed(123)\nlarge_data &lt;- data.frame(\n  id = 1:1e6,\n  value = rnorm(1e6)\n)\n\n# Perform some computationally intensive operations\nfor(i in 1:15) {\n  \nresult &lt;- large_data %&gt;%\n  group_by(id %% 10) %&gt;%\n  summarize(mean_value = mean(value))\nSys.sleep(2)\n\ncat(\"Runnning\", i,\"iteration.\\n\")\n\n}\n\ncat(\"Background job completed. \\n\")"
+  },
+  {
+    "objectID": "posts/August_2024/August2024.html#responsible-using-of-resources",
+    "href": "posts/August_2024/August2024.html#responsible-using-of-resources",
+    "title": "Running R computational tasks",
+    "section": "Responsible using of resources",
+    "text": "Responsible using of resources\nBSU servers “… can be used for small and medium-sized computing tasks”."
+  },
+  {
+    "objectID": "posts/August_2024/August2024.html#profiling",
+    "href": "posts/August_2024/August2024.html#profiling",
+    "title": "Running R computational tasks",
+    "section": "Profiling",
+    "text": "Profiling\nprofvis() \n\n\nlibrary(profvis)\n\nfunction_1 &lt;- function(size) {\n\n  large_list &lt;- lapply(1:size, function(x) rnorm(5000))\n  return(large_list)\n}\n\nfunction_2 &lt;- function(iterations) {\n  result &lt;- 0\n  for (i in 1:iterations) {\n    Sys.sleep(0.1) \n    result &lt;- result + i\n  }\n  return(result)\n}\n\nprofvis({\n  function_1(10000)\n  function_2(30)\n})"
+  },
+  {
+    "objectID": "posts/August_2024/August2024.html#debugging",
+    "href": "posts/August_2024/August2024.html#debugging",
+    "title": "Running R computational tasks",
+    "section": "Debugging",
+    "text": "Debugging\nbrowser() \nVideo"
+  },
+  {
+    "objectID": "posts/August_2024/August2024.html#parallelisation",
+    "href": "posts/August_2024/August2024.html#parallelisation",
+    "title": "Running R computational tasks",
+    "section": "Parallelisation",
+    "text": "Parallelisation\n\n\nfor() loop\nresult &lt;- NULL\n\nfor (i in 1:1000) {\n  result[i] &lt;- rnorm(1)^2 \n}\n\nforeach() loop\nlibrary(foreach)\nlibrary(doParallel)\n\ncl &lt;- makeCluster(parallel::detectCores() - 1)\nregisterDoParallel(cl)\n\nresult &lt;- foreach(i = 1:1000, .combine = 'c') %dopar% {\n  rnorm(1)^2 \n}\n\nstopCluster(cl)"
+  },
+  {
+    "objectID": "posts/August_2024/August2024.html#running-background-jobs-in-r",
+    "href": "posts/August_2024/August2024.html#running-background-jobs-in-r",
+    "title": "Running R Computational Tasks",
+    "section": "Running Background Jobs in R",
+    "text": "Running Background Jobs in R\n\nExample 1: Running an Iterative Task in the Background\nBackground jobs allow long-running computations to execute independently, freeing the R console for other tasks.\n\n\nlibrary(dplyr)\n\n# Simulate a large dataset\nset.seed(123)\nlarge_data &lt;- data.frame(\n  id = 1:1e6,\n  value = rnorm(1e6)\n)\n\n# Perform some computationally intensive operations\nfor(i in 1:15) {\n  result &lt;- large_data %&gt;%\n    group_by(id %% 10) %&gt;%\n    summarize(mean_value = mean(value))\n  Sys.sleep(2) # Simulate long-running process\n  cat(\"Running\", i, \"iteration.\\n\")\n}\n\ncat(\"Background job completed.\\n\")\n\n\n\n\n\n\n\n\n\n\n\nExplanation:\n\nSys.sleep(2) simulates a time-consuming task.\nEach iteration performs a grouped summary operation.\nRunning this in the background allows users to interact with R without interruption."
+  },
+  {
+    "objectID": "posts/August_2024/August2024.html#responsible-use-of-resources",
+    "href": "posts/August_2024/August2024.html#responsible-use-of-resources",
+    "title": "Running R Computational Tasks",
+    "section": "Responsible Use of Resources",
+    "text": "Responsible Use of Resources\nIt’s crucial to balance computational demand to prevent overloading shared servers.\nExample: The BSU servers allow small to medium-sized tasks, so large-scale simulations should be managed carefully.\n\n📌 Best Practice: Use resource monitoring tools (top, htop) to check CPU usage before launching intensive computations."
+  },
+  {
+    "objectID": "posts/August_2024/August2024.html#profiling-computational-performance",
+    "href": "posts/August_2024/August2024.html#profiling-computational-performance",
+    "title": "Running R Computational Tasks",
+    "section": "Profiling Computational Performance",
+    "text": "Profiling Computational Performance\nUnderstanding where R code spends most of its execution time helps optimize functions.\n\nExample 2: Using profvis() to Analyze Execution Time\nlibrary(profvis)\n\nfunction_1 &lt;- function(size) {\n  large_list &lt;- lapply(1:size, function(x) rnorm(5000))\n  return(large_list)\n}\n\nfunction_2 &lt;- function(iterations) {\n  result &lt;- 0\n  for (i in 1:iterations) {\n    Sys.sleep(0.1) \n    result &lt;- result + i\n  }\n  return(result)\n}\n\nprofvis({\n  function_1(10000)\n  function_2(30)\n})\n\n\nExplanation:\n\nprofvis() visualizes where time is spent in an R script.\nHelps identify slow functions and optimize code for better efficiency."
+  },
+  {
+    "objectID": "posts/August_2024/August2024.html#debugging-r-code",
+    "href": "posts/August_2024/August2024.html#debugging-r-code",
+    "title": "Running R Computational Tasks",
+    "section": "Debugging R Code",
+    "text": "Debugging R Code\n\nExample 3: Using browser() for Step-by-Step Debugging\nfoo &lt;- function(x) {\n  browser()\n  return(x * 2)\n}\n\nfoo(10)\n\n\nExplanation:\n\nbrowser() allows stepwise execution, helping debug unexpected errors.\nThe function pauses at browser(), enabling users to inspect variables interactively.\n\nVideo"
+  },
+  {
+    "objectID": "posts/August_2024/August2024.html#parallelization-in-r",
+    "href": "posts/August_2024/August2024.html#parallelization-in-r",
+    "title": "Running R Computational Tasks",
+    "section": "Parallelization in R",
+    "text": "Parallelization in R\n\nExample 4: Parallelizing Loops with foreach\nUsing parallel computing significantly reduces execution time.\n\n\n\nRegular for() Loop\nresult &lt;- NULL\n\nfor (i in 1:1000) {\n  result[i] &lt;- rnorm(1)^2 \n}\n\n\n\n\n\nParallelized foreach() Loop\nlibrary(foreach)\nlibrary(doParallel)\n\ncl &lt;- makeCluster(parallel::detectCores() - 1)\nregisterDoParallel(cl)\n\nresult &lt;- foreach(i = 1:1000, .combine = 'c') %dopar% {\n  rnorm(1)^2 \n}\n\nstopCluster(cl)\n\n\n\n\n\nExplanation:\n\nStandard for() loops execute sequentially, which is slow for large-scale tasks.\nforeach() with doParallel allows parallel execution, leveraging multiple CPU cores.\nmakeCluster(parallel::detectCores() - 1) ensures all but one core are used, preventing system overload.\n\n📌 Best Practice: Always test code sequentially first before enabling parallel execution to debug potential issues.\n\n\n\nConclusion\nBy implementing these techniques, you can run computational tasks in R more efficiently, reducing runtime and improving workflow performance. 🚀"
+  },
+  {
+    "objectID": "posts/August_2024/August2024.html#parallelisation-in-r",
+    "href": "posts/August_2024/August2024.html#parallelisation-in-r",
+    "title": "Running R Computational Tasks",
+    "section": "Parallelisation in R",
+    "text": "Parallelisation in R\n\nExample 4: Parallelising Loops with foreach\nUsing parallel computing significantly reduces execution time.\n\n\n\nRegular for() Loop\nresult &lt;- NULL\n\nfor (i in 1:1000) {\n  result[i] &lt;- rnorm(1)^2 \n}\n\n\n\n\n\nParallelised foreach() Loop\nlibrary(foreach)\nlibrary(doParallel)\n\ncl &lt;- makeCluster(parallel::detectCores() - 1)\nregisterDoParallel(cl)\n\nresult &lt;- foreach(i = 1:1000, .combine = 'c') %dopar% {\n  rnorm(1)^2 \n}\n\nstopCluster(cl)\n\n\n\n\n\nExplanation:\n\nStandard for() loops execute sequentially, which is slow for large-scale tasks.\nforeach() with doParallel allows parallel execution, leveraging multiple CPU cores.\nmakeCluster(parallel::detectCores() - 1) ensures all but one core are used, preventing system overload.\n\n📌 Best Practice: Always test code sequentially first before enabling parallel execution to debug potential issues.\n\n\n\nConclusion\nBy implementing these techniques, you can run computational tasks in R more efficiently, reducing runtime and improving workflow performance. 🚀"
   }
 ]

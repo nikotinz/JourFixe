@@ -1,0 +1,203 @@
+---
+title: "Running R Computational Tasks"
+description: "Exploring efficient ways to run computational tasks in R, from background jobs to profiling, debugging, and parallelisation, with practical tips and examples."
+author: "Nikita M."
+date: "2024-08-22"
+format:
+  html:
+    page-layout: article
+    toc: true
+    html-math-method: katex
+    highlight: tango
+title-block-banner: false
+categories: [R-tips]
+---
+
+## Motivation
+
+Running computationally expensive tasks in R can be challenging, especially when working with **large datasets** and **intensive operations**. This article provides **practical strategies** for efficiently handling background jobs, optimising performance, debugging, and leveraging parallelisation.
+
+## Addressing
+
+Efficient execution of computational tasks ensures that R processes run **without blocking user interaction**, effectively utilising system resources. The **pyramid framework** below illustrates the **layers of computational efficiency** in R programming.
+
+![](media/pyramid.png){fig-align="center"}
+
+[Source: Selina Baldauf](https://github.com/selinaZitrone/tools_and_tips/)
+
+------------------------------------------------------------------------
+
+## Running Background Jobs in R
+
+### **Example 1: Running an Iterative Task in the Background**
+
+Background jobs allow **long-running computations** to execute independently, 
+freeing the **R console** for other tasks.  
+
+::::: columns
+::: {.column width="55%"}
+``` r
+library(dplyr)
+
+# Simulate a large dataset
+set.seed(123)
+large_data <- data.frame(
+  id = 1:1e6,
+  value = rnorm(1e6)
+)
+
+# Perform some computationally intensive operations
+for(i in 1:15) {
+  result <- large_data %>%
+    group_by(id %% 10) %>%
+    summarize(mean_value = mean(value))
+  Sys.sleep(2) # Simulate long-running process
+  cat("Running", i, "iteration.\n")
+}
+
+cat("Background job completed.\n")
+```
+:::
+::: {.column width="5%"}
+:::
+::: {.column width="40%"}
+#### 
+![](media/bg_job_settings.png){.lightbox}
+:::
+:::::
+
+### **Explanation:**
+
+-   `Sys.sleep(2)` **simulates** a time-consuming task.
+-   **Each iteration** performs a grouped summary operation.
+-   Running this **in the background** allows users to interact with R **without interruption**.
+
+------------------------------------------------------------------------
+
+## Responsible Use of Resources
+
+It’s crucial to **balance computational demand** to prevent **overloading shared servers**.
+
+**Example:** The BSU servers allow **small to medium-sized tasks**, so large-scale simulations should be managed carefully.
+
+![](media/overloaded.jpg){.lightbox width="1100"}
+
+📌 **Best Practice:** Use **resource monitoring tools** (`top`, `htop`) to check CPU usage before launching intensive computations.
+
+------------------------------------------------------------------------
+
+# Code Optimisation in R
+
+## Profiling Computational Performance
+
+Understanding where **R code spends most of its execution time** helps optimise functions.
+
+### **Example 2: Using `profvis()` to Analyse Execution Time**
+
+``` r
+library(profvis)
+
+function_1 <- function(size) {
+  large_list <- lapply(1:size, function(x) rnorm(5000))
+  return(large_list)
+}
+
+function_2 <- function(iterations) {
+  result <- 0
+  for (i in 1:iterations) {
+    Sys.sleep(0.1) 
+    result <- result + i
+  }
+  return(result)
+}
+
+profvis({
+  function_1(10000)
+  function_2(30)
+})
+```
+
+### **Explanation:**
+
+-   `profvis()` visualises **where time is spent** in an R script.
+-   Helps identify **slow functions** and optimise code for **better efficiency**.
+
+![](media/profvis.png){.lightbox}
+
+------------------------------------------------------------------------
+
+## Debugging R Code
+
+### **Example 3: Using `browser()` for Step-by-Step Debugging**
+
+``` r
+foo <- function(x) {
+  browser()
+  return(x * 2)
+}
+
+foo(10)
+```
+
+### **Explanation:**
+
+-   `browser()` allows **stepwise execution**, helping debug **unexpected errors**.
+-   The function pauses at `browser()`, enabling users to inspect variables interactively.
+
+![](media/browser.mp4)
+
+------------------------------------------------------------------------
+
+## Parallelisation in R
+
+### **Example 4: Parallelising Loops with `foreach`**
+
+Using parallel computing **significantly reduces execution time**.
+
+::::: columns
+::: {.column width="45%"}
+#### **Regular `for()` Loop**
+
+``` r
+result <- NULL
+
+for (i in 1:1000) {
+  result[i] <- rnorm(1)^2 
+}
+```
+:::
+::: {.column width="5%"}
+
+:::
+::: {.column width="50%"}
+#### **Parallelised `foreach()` Loop**
+
+``` r
+library(foreach)
+library(doParallel)
+
+cl <- makeCluster(parallel::detectCores() - 1)
+registerDoParallel(cl)
+
+result <- foreach(i = 1:1000, .combine = 'c') %dopar% {
+  rnorm(1)^2 
+}
+
+stopCluster(cl)
+```
+:::
+:::::
+
+### **Explanation:**
+
+-   **Standard `for()` loops** execute sequentially, which is slow for large-scale tasks.
+-   **`foreach()` with `doParallel`** allows parallel execution, **leveraging multiple CPU cores**.
+-   `makeCluster(parallel::detectCores() - 1)` ensures all but one core are used, **preventing system overload**.
+
+📌 **Best Practice:** Always **test code sequentially first** before enabling parallel execution to debug potential issues.
+
+------------------------------------------------------------------------
+
+### **Conclusion**
+
+By implementing these techniques, you can **run computational tasks in R more efficiently**, reducing runtime and improving workflow performance. 🚀

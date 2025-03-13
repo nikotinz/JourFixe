@@ -1,5 +1,7 @@
 ---
 title: "R tips March 2025"
+description: "Exploring **floating-point precision**, **memory allocation**, and 
+**partial matching** in R; insights and explanations to help avoid common pitfalls in coding."
 author: "Nikita M."
 format:
   html:

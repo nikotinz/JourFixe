@@ -8,8 +8,9 @@
 
 <meta name="author" content="Nikita M.">
 <meta name="dcterms.date" content="2025-03-13">
+<meta name="description" content="Exploring floating-point precision, memory allocation, and partial matching in R; insights and explanations to help avoid common pitfalls in coding.">
 
-<title>My Pain in R – R for a Jour Fixe</title>
+<title>R tips March 2025 – R for a Jour Fixe</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -174,12 +175,17 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">My Pain in R</h1>
+<h1 class="title">R tips March 2025</h1>
   <div class="quarto-categories">
     <div class="quarto-category">R-tips</div>
   </div>
   </div>
 
+<div>
+  <div class="description">
+    Exploring <em>floating-point precision</em>, memory allocation, and partial matching in R; insights and explanations to help avoid common pitfalls in coding.
+  </div>
+</div>
 
 
 <div class="quarto-title-meta">
@@ -386,9 +392,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 NULL</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(results<span class="sc">$</span>p)  <span class="co"># Partial matching</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning in results$p: partial match of 'p' to 'power'</code></pre>
-</div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 0.8</code></pre>
 </div>
@@ -401,31 +404,25 @@ NULL</code></pre>
 <section id="example-9-unexpected-partial-matching-in-lists" class="level3">
 <h3 class="anchored" data-anchor-id="example-9-unexpected-partial-matching-in-lists"><strong>Example 9: Unexpected Partial Matching in Lists</strong></h3>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>x <span class="ot">=</span> <span class="fu">list</span>(<span class="at">data =</span> <span class="dv">2</span>, <span class="at">power =</span> <span class="dv">10</span>)</span>
-<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>x<span class="sc">$</span>p  <span class="co"># Partial matching: returns 10</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning in x$p: partial match of 'p' to 'power'</code></pre>
-</div>
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>x <span class="ot">=</span> <span class="fu">list</span>(<span class="at">data =</span> <span class="dv">2</span>, <span class="at">power =</span> <span class="dv">10</span>)</span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>x<span class="sc">$</span>p  <span class="co"># Partial matching: returns 10</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 10</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (x<span class="sc">$</span>p <span class="sc">==</span> <span class="dv">10</span>) <span class="fu">cat</span>(<span class="st">"variable p == 10</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning in x$p: partial match of 'p' to 'power'</code></pre>
-</div>
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (x<span class="sc">$</span>p <span class="sc">==</span> <span class="dv">10</span>) <span class="fu">cat</span>(<span class="st">"variable p == 10</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>variable p == 10</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Avoiding partial matching</span></span>
-<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a><span class="fu">options</span>(<span class="at">warnPartialMatchDollar =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(x<span class="sc">$</span>p)  <span class="co"># Now warns about partial matching</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Avoiding partial matching</span></span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a><span class="fu">options</span>(<span class="at">warnPartialMatchDollar =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(x<span class="sc">$</span>p)  <span class="co"># Now warns about partial matching</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Warning in x$p: partial match of 'p' to 'power'</code></pre>
 </div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 10</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(x[[<span class="st">"p"</span>]])  <span class="co"># Explicit retrieval, avoiding unexpected matches</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(x[[<span class="st">"p"</span>]])  <span class="co"># Explicit retrieval, avoiding unexpected matches</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>NULL</code></pre>
 </div>
