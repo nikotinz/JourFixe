@@ -156,7 +156,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#addressing" id="toc-addressing" class="nav-link" data-scroll-target="#addressing">Addressing</a></li>
   <li><a href="#running-background-jobs-in-r" id="toc-running-background-jobs-in-r" class="nav-link" data-scroll-target="#running-background-jobs-in-r">Running Background Jobs in R</a>
   <ul class="collapse">
-  <li><a href="#example-1-running-an-iterative-task-in-the-background" id="toc-example-1-running-an-iterative-task-in-the-background" class="nav-link" data-scroll-target="#example-1-running-an-iterative-task-in-the-background"><strong>Example 1: Running an Iterative Task in the Background</strong></a></li>
+  <li><a href="#example-running-an-iterative-task-in-the-background" id="toc-example-running-an-iterative-task-in-the-background" class="nav-link" data-scroll-target="#example-running-an-iterative-task-in-the-background"><strong>Example: Running an Iterative Task in the Background</strong></a></li>
+  <li><a href="#steps-to-run-a-background-job-in-rstudio" id="toc-steps-to-run-a-background-job-in-rstudio" class="nav-link" data-scroll-target="#steps-to-run-a-background-job-in-rstudio"><strong>Steps to Run a Background Job in RStudio</strong></a></li>
   <li><a href="#explanation" id="toc-explanation" class="nav-link" data-scroll-target="#explanation"><strong>Explanation:</strong></a></li>
   </ul></li>
   <li><a href="#responsible-use-of-resources" id="toc-responsible-use-of-resources" class="nav-link" data-scroll-target="#responsible-use-of-resources">Responsible Use of Resources</a></li>
@@ -164,17 +165,22 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <ul class="collapse">
   <li><a href="#profiling-computational-performance" id="toc-profiling-computational-performance" class="nav-link" data-scroll-target="#profiling-computational-performance">Profiling Computational Performance</a>
   <ul class="collapse">
-  <li><a href="#example-2-using-profvis-to-analyse-execution-time" id="toc-example-2-using-profvis-to-analyse-execution-time" class="nav-link" data-scroll-target="#example-2-using-profvis-to-analyse-execution-time"><strong>Example 2: Using <code>profvis()</code> to Analyse Execution Time</strong></a></li>
+  <li><a href="#why-profiling-matters" id="toc-why-profiling-matters" class="nav-link" data-scroll-target="#why-profiling-matters"><strong>Why Profiling Matters?</strong></a></li>
+  <li><a href="#example-using-profvis-to-analyse-execution-time" id="toc-example-using-profvis-to-analyse-execution-time" class="nav-link" data-scroll-target="#example-using-profvis-to-analyse-execution-time"><strong>Example: Using <code>profvis()</code> to Analyse Execution Time</strong></a></li>
   <li><a href="#explanation-1" id="toc-explanation-1" class="nav-link" data-scroll-target="#explanation-1"><strong>Explanation:</strong></a></li>
   </ul></li>
   <li><a href="#debugging-r-code" id="toc-debugging-r-code" class="nav-link" data-scroll-target="#debugging-r-code">Debugging R Code</a>
   <ul class="collapse">
-  <li><a href="#example-3-using-browser-for-step-by-step-debugging" id="toc-example-3-using-browser-for-step-by-step-debugging" class="nav-link" data-scroll-target="#example-3-using-browser-for-step-by-step-debugging"><strong>Example 3: Using <code>browser()</code> for Step-by-Step Debugging</strong></a></li>
+  <li><a href="#why-debugging-matters" id="toc-why-debugging-matters" class="nav-link" data-scroll-target="#why-debugging-matters"><strong>Why Debugging Matters?</strong></a></li>
+  <li><a href="#common-debugging-techniques-in-r" id="toc-common-debugging-techniques-in-r" class="nav-link" data-scroll-target="#common-debugging-techniques-in-r"><strong>Common Debugging Techniques in R</strong></a></li>
+  <li><a href="#example-using-browser-for-step-by-step-debugging" id="toc-example-using-browser-for-step-by-step-debugging" class="nav-link" data-scroll-target="#example-using-browser-for-step-by-step-debugging"><strong>Example: Using <code>browser()</code> for Step-by-Step Debugging</strong></a></li>
   <li><a href="#explanation-2" id="toc-explanation-2" class="nav-link" data-scroll-target="#explanation-2"><strong>Explanation:</strong></a></li>
   </ul></li>
   <li><a href="#parallelisation-in-r" id="toc-parallelisation-in-r" class="nav-link" data-scroll-target="#parallelisation-in-r">Parallelisation in R</a>
   <ul class="collapse">
-  <li><a href="#example-4-parallelising-loops-with-foreach" id="toc-example-4-parallelising-loops-with-foreach" class="nav-link" data-scroll-target="#example-4-parallelising-loops-with-foreach"><strong>Example 4: Parallelising Loops with <code>foreach</code></strong></a></li>
+  <li><a href="#why-parallelisation-matters" id="toc-why-parallelisation-matters" class="nav-link" data-scroll-target="#why-parallelisation-matters"><strong>Why Parallelisation Matters?</strong></a></li>
+  <li><a href="#common-parallelisation-strategies-in-r" id="toc-common-parallelisation-strategies-in-r" class="nav-link" data-scroll-target="#common-parallelisation-strategies-in-r"><strong>Common Parallelisation Strategies in R</strong></a></li>
+  <li><a href="#example-parallelising-loops-with-foreach" id="toc-example-parallelising-loops-with-foreach" class="nav-link" data-scroll-target="#example-parallelising-loops-with-foreach"><strong>Example: Parallelising Loops with <code>foreach</code></strong></a></li>
   <li><a href="#explanation-3" id="toc-explanation-3" class="nav-link" data-scroll-target="#explanation-3"><strong>Explanation:</strong></a></li>
   <li><a href="#conclusion" id="toc-conclusion" class="nav-link" data-scroll-target="#conclusion"><strong>Conclusion</strong></a></li>
   </ul></li>
@@ -226,11 +232,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <section id="motivation" class="level2">
 <h2 class="anchored" data-anchor-id="motivation">Motivation</h2>
-<p>Running computationally expensive tasks in R can be challenging, especially when working with <strong>large datasets</strong> and <strong>intensive operations</strong>. This article provides <strong>practical strategies</strong> for efficiently handling background jobs, optimising performance, debugging, and leveraging parallelisation.</p>
+<p>Running computationally expensive tasks in R can be challenging, especially when working with <strong>large datasets</strong> and <strong>intensive calculations</strong>. This post provides <strong>practical tips</strong> for efficiently handling background jobs, optimising performance, debugging, and parallelisation.</p>
 </section>
 <section id="addressing" class="level2">
 <h2 class="anchored" data-anchor-id="addressing">Addressing</h2>
-<p>Efficient execution of computational tasks ensures that R processes run <strong>without blocking user interaction</strong>, effectively utilising system resources. The <strong>pyramid framework</strong> below illustrates the <strong>layers of computational efficiency</strong> in R programming.</p>
+<p>Efficient execution of computational tasks ensures that R processes run without blocking user interaction, effectively utilising system resources. The pyramid below illustrates the layers of computational efficiency in R programming.</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><img src="media/pyramid.png" class="img-fluid quarto-figure quarto-figure-center figure-img"></p>
@@ -241,9 +247,18 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="running-background-jobs-in-r" class="level2">
 <h2 class="anchored" data-anchor-id="running-background-jobs-in-r">Running Background Jobs in R</h2>
-<section id="example-1-running-an-iterative-task-in-the-background" class="level3">
-<h3 class="anchored" data-anchor-id="example-1-running-an-iterative-task-in-the-background"><strong>Example 1: Running an Iterative Task in the Background</strong></h3>
-<p>Background jobs allow <strong>long-running computations</strong> to execute independently, freeing the <strong>R console</strong> for other tasks.</p>
+<section id="example-running-an-iterative-task-in-the-background" class="level3">
+<h3 class="anchored" data-anchor-id="example-running-an-iterative-task-in-the-background"><strong>Example: Running an Iterative Task in the Background</strong></h3>
+<p>Background jobs allow long-running computations** to execute independently, freeing the R console for other tasks.</p>
+</section>
+<section id="steps-to-run-a-background-job-in-rstudio" class="level3">
+<h3 class="anchored" data-anchor-id="steps-to-run-a-background-job-in-rstudio"><strong>Steps to Run a Background Job in RStudio</strong></h3>
+<ol type="1">
+<li>Open RStudio.</li>
+<li>Click on “Jobs” → “Start Job” from the RStudio Environment Pane.</li>
+<li>Choose “Run Script in Background” and select <code>script_name.R</code>.</li>
+<li>Monitor progress in the Jobs Pane.</li>
+</ol>
 <div class="columns">
 <div class="column" style="width:55%;">
 <div class="sourceCode" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
@@ -278,28 +293,48 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="explanation" class="level3">
 <h3 class="anchored" data-anchor-id="explanation"><strong>Explanation:</strong></h3>
 <ul>
-<li><code>Sys.sleep(2)</code> <strong>simulates</strong> a time-consuming task.</li>
-<li><strong>Each iteration</strong> performs a grouped summary operation.</li>
-<li>Running this <strong>in the background</strong> allows users to interact with R <strong>without interruption</strong>.</li>
+<li><code>Sys.sleep(2)</code> simulates a time-consuming task.</li>
+<li>Each iteration performs a grouped summary operation.</li>
+<li>Running this in the background allows users to interact with R without interruption.</li>
 </ul>
 <hr>
 </section>
 </section>
 <section id="responsible-use-of-resources" class="level2">
 <h2 class="anchored" data-anchor-id="responsible-use-of-resources">Responsible Use of Resources</h2>
-<p>It’s crucial to <strong>balance computational demand</strong> to prevent <strong>overloading shared servers</strong>.</p>
-<p><strong>Example:</strong> The BSU servers allow <strong>small to medium-sized tasks</strong>, so large-scale simulations should be managed carefully.</p>
+<p>It’s crucial to balance computational demand to prevent overloading shared servers.</p>
+<p><strong>Example:</strong> Most non-HPC servers allow to run small to medium-sized tasks, so large-scale simulations should be managed carefully.</p>
 <p><a href="media/overloaded.jpg" class="lightbox" data-gallery="quarto-lightbox-gallery-2"><img src="media/overloaded.jpg" class="img-fluid" width="1100"></a></p>
-<p>📌 <strong>Best Practice:</strong> Use <strong>resource monitoring tools</strong> (<code>top</code>, <code>htop</code>) to check CPU usage before launching intensive computations.</p>
+<p><strong>Best Practice:</strong></p>
+<ul>
+<li><p>Use resource monitoring tools (<code>top</code>, <code>htop</code>) to check CPU usage before launching intensive computations.</p></li>
+<li><p>Run long processes inside terminal multiplexers (tmux, screen) to keep jobs running even if the connection is lost.</p></li>
+</ul>
+<p><strong>🔗 Useful Resources</strong></p>
+<p>📖 <a href="https://www.gnu.org/software/screen/manual/screen.html">GNU Screen Documentation</a><br>
+📖 <a href="https://github.com/tmux/tmux/wiki">tmux: Terminal Multiplexer</a><br>
+📖 Monitoring System Usage in Linux: <a href="https://man7.org/linux/man-pages/man1/top.1.html"><code>top</code> command</a>, <a href="https://htop.dev/"><code>htop</code> command</a></p>
 <hr>
 </section>
 <section id="code-optimisation-in-r" class="level1">
 <h1>Code Optimisation in R</h1>
 <section id="profiling-computational-performance" class="level2">
 <h2 class="anchored" data-anchor-id="profiling-computational-performance">Profiling Computational Performance</h2>
-<p>Understanding where <strong>R code spends most of its execution time</strong> helps optimise functions.</p>
-<section id="example-2-using-profvis-to-analyse-execution-time" class="level3">
-<h3 class="anchored" data-anchor-id="example-2-using-profvis-to-analyse-execution-time"><strong>Example 2: Using <code>profvis()</code> to Analyse Execution Time</strong></h3>
+<p>Optimising R code begins with understanding where time and resources are spent. Profiling helps identify bottlenecks - functions or operations that consume excessive computation time. By analysing execution time, memory usage, and function calls, we can make targeted improvements to enhance efficiency.</p>
+<section id="why-profiling-matters" class="level3">
+<h3 class="anchored" data-anchor-id="why-profiling-matters"><strong>Why Profiling Matters?</strong></h3>
+<ul>
+<li>Detects slow functions that need optimisation.<br>
+</li>
+<li>Highlights redundant computations or excessive loops.<br>
+</li>
+<li>Helps determine whether vectorisation or parallelisation could improve performance.<br>
+</li>
+<li>Identifies memory-intensive operations that could cause inefficiencies.</li>
+</ul>
+</section>
+<section id="example-using-profvis-to-analyse-execution-time" class="level3">
+<h3 class="anchored" data-anchor-id="example-using-profvis-to-analyse-execution-time"><strong>Example: Using <code>profvis()</code> to Analyse Execution Time</strong></h3>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(profvis)</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>function_1 <span class="ot">&lt;-</span> <span class="cf">function</span>(size) {</span>
@@ -324,8 +359,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="explanation-1" class="level3">
 <h3 class="anchored" data-anchor-id="explanation-1"><strong>Explanation:</strong></h3>
 <ul>
-<li><code>profvis()</code> visualises <strong>where time is spent</strong> in an R script.</li>
-<li>Helps identify <strong>slow functions</strong> and optimise code for <strong>better efficiency</strong>.</li>
+<li><code>profvis()</code> visualises where time is spent in an R script.</li>
+<li>Helps identify slow functions and optimise code for better efficiency.</li>
 </ul>
 <p><a href="media/profvis.png" class="lightbox" data-gallery="quarto-lightbox-gallery-3"><img src="media/profvis.png" class="img-fluid"></a></p>
 <hr>
@@ -333,8 +368,58 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="debugging-r-code" class="level2">
 <h2 class="anchored" data-anchor-id="debugging-r-code">Debugging R Code</h2>
-<section id="example-3-using-browser-for-step-by-step-debugging" class="level3">
-<h3 class="anchored" data-anchor-id="example-3-using-browser-for-step-by-step-debugging"><strong>Example 3: Using <code>browser()</code> for Step-by-Step Debugging</strong></h3>
+<p>Writing R code often involves unexpected errors, warnings, or incorrect outputs. Effective debugging strategies help identify issues quickly, saving time and improving code reliability. Debugging tools allow users to step through execution, inspect variable values, and trace errors at runtime.</p>
+<section id="why-debugging-matters" class="level3">
+<h3 class="anchored" data-anchor-id="why-debugging-matters"><strong>Why Debugging Matters?</strong></h3>
+<ul>
+<li>Helps locate logic errors and unexpected behavior.<br>
+</li>
+<li>Allows interactive inspection of variables during execution.<br>
+</li>
+<li>Enables tracing of function calls to find where an error originates.<br>
+</li>
+<li>Reduces reliance on excessive <code>print()</code> statements for debugging.</li>
+</ul>
+</section>
+<section id="common-debugging-techniques-in-r" class="level3">
+<h3 class="anchored" data-anchor-id="common-debugging-techniques-in-r"><strong>Common Debugging Techniques in R</strong></h3>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 52%">
+<col style="width: 47%">
+</colgroup>
+<thead>
+<tr class="header">
+<th><strong>Method</strong></th>
+<th><strong>Use Case</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>browser()</code></td>
+<td>Interactive debugging by pausing function execution.</td>
+</tr>
+<tr class="even">
+<td><code>traceback()</code></td>
+<td>Identifies where an error occurred after execution fails.</td>
+</tr>
+<tr class="odd">
+<td><code>debug()</code></td>
+<td>Step-through debugging for specific functions.</td>
+</tr>
+<tr class="even">
+<td><code>options(error = recover)</code></td>
+<td>Allows selecting the function frame where an error occurred.</td>
+</tr>
+<tr class="odd">
+<td><code>tryCatch()</code></td>
+<td>Handles errors gracefully without stopping execution.</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="example-using-browser-for-step-by-step-debugging" class="level3">
+<h3 class="anchored" data-anchor-id="example-using-browser-for-step-by-step-debugging"><strong>Example: Using <code>browser()</code> for Step-by-Step Debugging</strong></h3>
 <div class="sourceCode" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>foo <span class="ot">&lt;-</span> <span class="cf">function</span>(x) {</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">browser</span>()</span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(x <span class="sc">*</span> <span class="dv">2</span>)</span>
@@ -345,7 +430,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="explanation-2" class="level3">
 <h3 class="anchored" data-anchor-id="explanation-2"><strong>Explanation:</strong></h3>
 <ul>
-<li><code>browser()</code> allows <strong>stepwise execution</strong>, helping debug <strong>unexpected errors</strong>.</li>
+<li><code>browser()</code> allows stepwise execution, helping debug unexpected errors.</li>
 <li>The function pauses at <code>browser()</code>, enabling users to inspect variables interactively.</li>
 </ul>
 <p><video src="media/browser.mp4" class="img-fluid" controls=""><a href="media/browser.mp4">Video</a></video></p>
@@ -354,9 +439,55 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="parallelisation-in-r" class="level2">
 <h2 class="anchored" data-anchor-id="parallelisation-in-r">Parallelisation in R</h2>
-<section id="example-4-parallelising-loops-with-foreach" class="level3">
-<h3 class="anchored" data-anchor-id="example-4-parallelising-loops-with-foreach"><strong>Example 4: Parallelising Loops with <code>foreach</code></strong></h3>
-<p>Using parallel computing <strong>significantly reduces execution time</strong>.</p>
+<p>Parallel computing significantly reduces execution time by distributing workloads across multiple CPU cores or machines. R provides several parallel computing strategies, each suited for different use cases, from simple parallel loops to high-performance distributed computing.</p>
+<section id="why-parallelisation-matters" class="level3">
+<h3 class="anchored" data-anchor-id="why-parallelisation-matters"><strong>Why Parallelisation Matters?</strong></h3>
+<ul>
+<li>Reduces execution time for large datasets and simulations.<br>
+</li>
+<li>Utilises multiple CPU cores to improve efficiency.<br>
+</li>
+<li>Allows for distributed computing across clusters or cloud services.</li>
+</ul>
+</section>
+<section id="common-parallelisation-strategies-in-r" class="level3">
+<h3 class="anchored" data-anchor-id="common-parallelisation-strategies-in-r"><strong>Common Parallelisation Strategies in R</strong></h3>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 62%">
+<col style="width: 37%">
+</colgroup>
+<thead>
+<tr class="header">
+<th><strong>Method</strong></th>
+<th><strong>Use Case</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>foreach</code> + <code>doParallel</code></td>
+<td>Loops that can be parallelised across CPU cores.</td>
+</tr>
+<tr class="even">
+<td><code>parallel::mclapply()</code></td>
+<td>Multi-core version of <code>lapply()</code> (Linux/macOS only).</td>
+</tr>
+<tr class="odd">
+<td><code>future</code> + <code>furrr</code></td>
+<td>Asynchronous parallel computing with flexible backends.</td>
+</tr>
+<tr class="even">
+<td><code>mirai</code></td>
+<td>High-performance, low-overhead async computing.</td>
+</tr>
+</tbody>
+</table>
+<p>Using the right parallelisation approach depends on the type of computation, hardware resources, and scalability requirements.</p>
+<hr>
+</section>
+<section id="example-parallelising-loops-with-foreach" class="level3">
+<h3 class="anchored" data-anchor-id="example-parallelising-loops-with-foreach"><strong>Example: Parallelising Loops with <code>foreach</code></strong></h3>
+<p>Using parallel computing significantly reduces execution time.</p>
 <div class="columns">
 <div class="column" style="width:45%;">
 <section id="regular-for-loop" class="level4">
@@ -390,16 +521,32 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="explanation-3" class="level3">
 <h3 class="anchored" data-anchor-id="explanation-3"><strong>Explanation:</strong></h3>
 <ul>
-<li><strong>Standard <code>for()</code> loops</strong> execute sequentially, which is slow for large-scale tasks.</li>
-<li><strong><code>foreach()</code> with <code>doParallel</code></strong> allows parallel execution, <strong>leveraging multiple CPU cores</strong>.</li>
-<li><code>makeCluster(parallel::detectCores() - 1)</code> ensures all but one core are used, <strong>preventing system overload</strong>.</li>
+<li>Standard <code>for()</code> loops execute sequentially, which is slow for large-scale tasks.<br>
+</li>
+<li><code>foreach()</code> with <code>doParallel</code> allows parallel execution, using multiple CPU cores.<br>
+</li>
+<li><code>makeCluster(parallel::detectCores() - 1)</code> ensures all but one core are used, preventing system overload.<br>
+</li>
 </ul>
-<p>📌 <strong>Best Practice:</strong> Always <strong>test code sequentially first</strong> before enabling parallel execution to debug potential issues.</p>
-<hr>
+<p><strong>Best Practice:</strong></p>
+<ul>
+<li>Always <strong>test code sequentially first</strong> before enabling parallel execution to debug potential issues.<br>
+</li>
+<li>Ensure efficient memory usage, as parallel processing may increase RAM consumption.<br>
+</li>
+<li>Use <code>stopCluster(cl)</code> after parallel execution to release system resources.</li>
+<li>Using <code>makeCluster(parallel::detectCores() - 1)</code> may overload the system, especially on shared servers or personal machines, leading to performance degradation for other tasks. Best practice suggests limiting the number of cores to 2 in CRAN package examples and vignettes to ensure compatibility across different systems and prevent excessive resource consumption.</li>
+</ul>
+<p><strong>🔗 Useful Resources</strong><br>
+📖 <a href="https://cran.r-project.org/web/packages/foreach/index.html">foreach Package Documentation</a><br>
+📖 <a href="https://cran.r-project.org/web/packages/future/vignettes/future-1-overview.html">future Package Documentation</a><br>
+📖 <a href="https://cran.r-project.org/web/packages/mirai/index.html">mirai: Lightweight Async Computing</a><br>
+📖 <a href="https://cran.r-project.org/web/views/HighPerformanceComputing.html">Parallel Computing in R Guide</a><br>
+————————————————————————</p>
 </section>
 <section id="conclusion" class="level3">
 <h3 class="anchored" data-anchor-id="conclusion"><strong>Conclusion</strong></h3>
-<p>By implementing these techniques, you can <strong>run computational tasks in R more efficiently</strong>, reducing runtime and improving workflow performance. 🚀</p>
+<p>By implementing these techniques, you can run computational tasks in R more efficiently, reducing runtime and improving workflow performance.</p>
 
 
 </section>
@@ -828,7 +975,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 });
 </script>
 </div> <!-- /content -->
-<script>var lightboxQuarto = GLightbox({"selector":".lightbox","closeEffect":"zoom","loop":false,"descPosition":"bottom","openEffect":"zoom"});
+<script>var lightboxQuarto = GLightbox({"closeEffect":"zoom","selector":".lightbox","openEffect":"zoom","loop":false,"descPosition":"bottom"});
 (function() {
   let previousOnload = window.onload;
   window.onload = () => {

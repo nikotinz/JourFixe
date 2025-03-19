@@ -40,18 +40,48 @@ font-style: inherit;">3</span></span></code></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] FALSE</code></pre>
 </div>
+<div class="sourceCode cell-code" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.1</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.2</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.3</span></span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] FALSE</code></pre>
+</div>
 </div>
 <p><strong>Why does this return <code>FALSE</code>?</strong></p>
 <ul>
 <li><p>Due to how floating-point arithmetic works in computers, numbers like <code>0.1</code>, <code>0.3</code>, and <code>0.3 / 3</code> are stored in binary.</p></li>
-<li><p>Some decimal fractions <strong>cannot be represented exactly in binary</strong>, leading to tiny rounding errors.</p></li>
-<li><p>Even though mathematically <code>.1</code> and <code>.3 / 3</code> should be the same, their internal representations <strong>are not exactly equal</strong>.</p></li>
+<li><p>Some decimal fractions <strong>cannot be represented exactly in binary</strong>, leading to tiny rounding errors. E.g.:</p></li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">sprintf</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"%a"</span>, <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.1</span>)</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "0x1.999999999999ap-4"</code></pre>
+</div>
+</div>
+<p><strong>Explanation:</strong> - 0x indicates a hexadecimal number. - 1.999999999999a represents the normalised significand (mantissa) in base-16 (hexadecimal).</p>
+<ul>
+<li><p>p-4 is the exponent: p represents the power of 2 (exponent in base-2); 4 means the value is multiplied by 2⁻⁴.</p></li>
+<li><p>Even though mathematically <code>.1</code> and <code>.3 / 3</code> should be the same, their internal representations are not exactly equal.</p></li>
 </ul>
 </section>
 <section id="example-2-inspecting-the-actual-value-stored-in-memory" class="level3">
 <h3 class="anchored" data-anchor-id="example-2-inspecting-the-actual-value-stored-in-memory"><strong>Example 2: Inspecting the Actual Value Stored in Memory</strong></h3>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1">.<span class="dv" style="color: #AD0000;
+<div class="sourceCode cell-code" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1">.<span class="dv" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">3</span> <span class="sc" style="color: #5E5E5E;
 background-color: null;
@@ -61,7 +91,7 @@ font-style: inherit;">3</span></span></code></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 0.1</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><span class="fu" style="color: #4758AB;
+<div class="sourceCode cell-code" id="cb9" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">print</span>(.<span class="dv" style="color: #AD0000;
 background-color: null;
@@ -81,14 +111,14 @@ font-style: inherit;">16</span>)</span></code></pre></div>
 <p><strong>Explanation:</strong></p>
 <ul>
 <li><p>The first output shows what R normally prints, which is rounded for display.</p></li>
-<li><p>The second output uses <code>digits=16</code> to show more of the <strong>actual stored precision</strong>.</p></li>
-<li><p>This reveals that <code>0.3 / 3</code> is actually stored as <code>0.09999999999999999</code>, <strong>not exactly</strong> <code>0.1</code>.</p></li>
+<li><p>The second output uses <code>digits=16</code> to show more of the actual stored precision.</p></li>
+<li><p>This reveals that <code>0.3 / 3</code> is actually stored as <code>0.09999999999999999</code>, not exactly <code>0.1</code>.</p></li>
 </ul>
 </section>
 <section id="example-3-using-all.equal-instead-of" class="level3">
 <h3 class="anchored" data-anchor-id="example-3-using-all.equal-instead-of"><strong>Example 3: Using <code>all.equal()</code> Instead of <code>==</code></strong></h3>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><span class="fu" style="color: #4758AB;
+<div class="sourceCode cell-code" id="cb11" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">all.equal</span>(.<span class="dv" style="color: #AD0000;
 background-color: null;
@@ -107,18 +137,19 @@ font-style: inherit;">3</span>)</span></code></pre></div>
 <ul>
 <li><p><code>all.equal()</code> does not check for <strong>exact</strong> equality but allows a <strong>small tolerance</strong> to account for floating-point errors.</p></li>
 <li><p>It is the <strong>preferred way</strong> to compare floating-point numbers in R.</p></li>
+<li><p>Do not use all.equal directly in <code>if</code> expressions—either use <code>isTRUE(all.equal(...))</code> or identical if appropriate. If x and y are not equal, it returns a character string like: “Mean relative difference: 5.551115e-17”. The if statement expects <code>TRUE</code> or <code>FALSE</code>, but it receives a string, causing an error.</p></li>
 </ul>
 </section>
 <section id="example-4-machine-epsilon-adjusting-tolerance" class="level3">
 <h3 class="anchored" data-anchor-id="example-4-machine-epsilon-adjusting-tolerance"><strong>Example 4: Machine Epsilon &amp; Adjusting Tolerance</strong></h3>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb9" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1">.Machine<span class="sc" style="color: #5E5E5E;
+<div class="sourceCode cell-code" id="cb13" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1">.Machine<span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">$</span>double.eps</span></code></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 2.220446e-16</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb11" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><span class="fu" style="color: #4758AB;
+<div class="sourceCode cell-code" id="cb15" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">all.equal</span>(.<span class="dv" style="color: #AD0000;
 background-color: null;
@@ -140,7 +171,37 @@ font-style: inherit;">2.2e-17</span>)</span></code></pre></div>
 <p><strong>Explanation:</strong></p>
 <ul>
 <li><p><code>.Machine$double.eps</code> is the smallest possible difference that R can distinguish between two floating-point numbers.</p></li>
-<li><p>The default tolerance of <code>all.equal()</code> is <code>sqrt(.Machine$double.eps)</code>, but we can <strong>adjust it manually</strong> if needed.</p></li>
+<li><p>The default tolerance of <code>all.equal()</code> is <code>sqrt(.Machine$double.eps)</code>, but we can adjust it manually if needed.</p></li>
+</ul>
+</section>
+<section id="example-5-using-round" class="level3">
+<h3 class="anchored" data-anchor-id="example-5-using-round"><strong>Example 5: Using <code>round()</code></strong></h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb17" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1">.<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">round</span>(.<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">3</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">3</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">digits =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">16</span>)</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] TRUE</code></pre>
+</div>
+</div>
+<p><strong>Explanation:</strong></p>
+<ul>
+<li><code>round(..., digits = 16)</code> forces R to round the computed value to 16 decimal places, reducing precision issues.</li>
+<li>The comparison <code>0.1 == round(0.3 / 3, digits = 16)</code> now returns <code>TRUE</code></li>
 </ul>
 <p>📖 <strong>More details:</strong> <a href="https://www.burns-stat.com/documents/books/the-r-inferno/">The R Inferno</a></p>
 <hr>
@@ -149,17 +210,21 @@ font-style: inherit;">2.2e-17</span>)</span></code></pre></div>
 <section id="memory-allocation-in-r" class="level2">
 <h2 class="anchored" data-anchor-id="memory-allocation-in-r">Memory Allocation in R</h2>
 <p>Memory management in R determines how objects are stored and how much space they occupy. <strong>Understanding how R allocates memory</strong> can help optimize performance, especially with large datasets.</p>
-<section id="example-5-comparing-memory-usage-of-integer-and-double" class="level3">
-<h3 class="anchored" data-anchor-id="example-5-comparing-memory-usage-of-integer-and-double"><strong>Example 5: Comparing Memory Usage of Integer and Double</strong></h3>
+<section id="example-6-comparing-memory-usage-of-integer-and-double" class="level3">
+<h3 class="anchored" data-anchor-id="example-6-comparing-memory-usage-of-integer-and-double"><strong>Example 6: Comparing Memory Usage of Integer and Double</strong></h3>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb13" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1">x <span class="ot" style="color: #003B4F;
+<div class="sourceCode cell-code" id="cb19" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(lobstr)</span>
+<span id="cb19-2"></span>
+<span id="cb19-3">x <span class="ot" style="color: #003B4F;
 background-color: null;
 font-style: inherit;">&lt;-</span> <span class="dv" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">5</span>    <span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;"># Stored as double</span></span>
-<span id="cb13-2"><span class="fu" style="color: #4758AB;
+<span id="cb19-4"><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">obj_size</span>(x)  </span></code></pre></div>
 <div class="cell-output cell-output-stdout">
@@ -167,14 +232,14 @@ font-style: inherit;">obj_size</span>(x)  </span></code></pre></div>
 </div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb15" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1">y <span class="ot" style="color: #003B4F;
+<div class="sourceCode cell-code" id="cb21" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1">y <span class="ot" style="color: #003B4F;
 background-color: null;
 font-style: inherit;">&lt;-</span> <span class="dv" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">5</span>L   <span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;"># Stored as integer</span></span>
-<span id="cb15-2"><span class="fu" style="color: #4758AB;
+<span id="cb21-2"><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">obj_size</span>(y) </span></code></pre></div>
 <div class="cell-output cell-output-stdout">
@@ -183,15 +248,15 @@ font-style: inherit;">obj_size</span>(y) </span></code></pre></div>
 </div>
 <p><strong>Why are both <code>x</code> and <code>y</code> 56 bytes?</strong></p>
 <ul>
-<li><p>Even though <code>y</code> is an <strong>integer (4 bytes)</strong> and <code>x</code> is a <strong>double (8 bytes)</strong>, R adds metadata overhead.</p></li>
-<li><p>Every object in R carries around <strong>48 bytes of metadata</strong>, including type and reference count.</p></li>
-<li><p>Memory is aligned in <strong>multiples of 8 bytes</strong>, so the total allocation rounds up to 56 bytes.</p></li>
+<li><p>Even though <code>y</code> is an integer (4 bytes) and <code>x</code> is a double (8 bytes), R adds metadata overhead.</p></li>
+<li><p>Every object in R carries around 48 bytes of metadata, including type and reference count.</p></li>
+<li><p>Memory is aligned in multiples of 8 bytes, so the total allocation rounds up to 56 bytes.</p></li>
 </ul>
 </section>
-<section id="example-6-memory-usage-for-large-vectors" class="level3">
-<h3 class="anchored" data-anchor-id="example-6-memory-usage-for-large-vectors"><strong>Example 6: Memory Usage for Large Vectors</strong></h3>
+<section id="example-7-memory-usage-for-large-vectors" class="level3">
+<h3 class="anchored" data-anchor-id="example-7-memory-usage-for-large-vectors"><strong>Example 7: Memory Usage for Large Vectors</strong></h3>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb17" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1">x_vec <span class="ot" style="color: #003B4F;
+<div class="sourceCode cell-code" id="cb23" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1">x_vec <span class="ot" style="color: #003B4F;
 background-color: null;
 font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
 background-color: null;
@@ -202,7 +267,7 @@ background-color: null;
 font-style: inherit;">1000000</span>)   <span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;"># Double vector</span></span>
-<span id="cb17-2">y_vec <span class="ot" style="color: #003B4F;
+<span id="cb23-2">y_vec <span class="ot" style="color: #003B4F;
 background-color: null;
 font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
 background-color: null;
@@ -213,68 +278,62 @@ background-color: null;
 font-style: inherit;">1000000</span>)  <span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;"># Integer vector</span></span>
-<span id="cb17-3"></span>
-<span id="cb17-4"><span class="fu" style="color: #4758AB;
+<span id="cb23-3"></span>
+<span id="cb23-4"><span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;">obj_size</span>(x_vec)  <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># ~8 MB (each number is 8 bytes)</span></span></code></pre></div>
+font-style: inherit;">obj_size</span>(x_vec) </span></code></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>8.00 MB</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb19" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><span class="fu" style="color: #4758AB;
+<div class="sourceCode cell-code" id="cb25" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;">obj_size</span>(y_vec)  <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># ~4 MB (each number is 4 bytes)</span></span></code></pre></div>
+font-style: inherit;">obj_size</span>(y_vec)</span></code></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>4.00 MB</code></pre>
 </div>
 </div>
 <p><strong>Why does the integer vector use half the memory?</strong></p>
 <ul>
-<li><p>Each <strong>integer</strong> (<code>5L</code>) takes <strong>4 bytes per element</strong>.</p></li>
-<li><p>Each <strong>double</strong> (<code>5</code>) takes <strong>8 bytes per element</strong>.</p></li>
-<li><p>For <strong>large datasets</strong>, using integers instead of doubles can <strong>save significant memory</strong>.</p></li>
+<li><p>Each integer (<code>5L</code>) takes 4 bytes per element.</p></li>
+<li><p>Each double (<code>5</code>) takes 8 bytes per element.</p></li>
+<li><p>For large datasets, using integers instead of doubles can save significant memory.</p></li>
 </ul>
 </section>
-<section id="example-7-type-conversion-affects-memory-usage" class="level3">
-<h3 class="anchored" data-anchor-id="example-7-type-conversion-affects-memory-usage"><strong>Example 7: Type Conversion Affects Memory Usage</strong></h3>
+<section id="example-8-type-conversion-affects-memory-usage" class="level3">
+<h3 class="anchored" data-anchor-id="example-8-type-conversion-affects-memory-usage"><strong>Example 8: Type Conversion Affects Memory Usage</strong></h3>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb21" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1">y_vec[<span class="dv" style="color: #AD0000;
+<div class="sourceCode cell-code" id="cb27" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1">y_vec[<span class="dv" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">2</span>] <span class="ot" style="color: #003B4F;
 background-color: null;
 font-style: inherit;">=</span> <span class="fl" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">5.0</span></span>
-<span id="cb21-2"><span class="fu" style="color: #4758AB;
+<span id="cb27-2"><span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;">obj_size</span>(y_vec)  <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Changes due to type conversion</span></span></code></pre></div>
+font-style: inherit;">obj_size</span>(y_vec)  </span></code></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>8.00 MB</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb23" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1">new_vec <span class="ot" style="color: #003B4F;
+<div class="sourceCode cell-code" id="cb29" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1">new_vec <span class="ot" style="color: #003B4F;
 background-color: null;
 font-style: inherit;">=</span> <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">lapply</span>(y_vec, as.integer)</span>
-<span id="cb23-2"><span class="fu" style="color: #4758AB;
+<span id="cb29-2"><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">obj_size</span>(new_vec) </span></code></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>64.00 MB</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb25" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1">new_vec[<span class="dv" style="color: #AD0000;
+<div class="sourceCode cell-code" id="cb31" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1">new_vec[<span class="dv" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">2</span>] <span class="ot" style="color: #003B4F;
 background-color: null;
 font-style: inherit;">=</span> <span class="fl" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">5.5</span></span>
-<span id="cb25-2">new_vec[<span class="dv" style="color: #AD0000;
+<span id="cb31-2">new_vec[<span class="dv" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">1</span><span class="sc" style="color: #5E5E5E;
 background-color: null;
@@ -291,7 +350,7 @@ font-style: inherit;">3</span>]</span></code></pre></div>
 [[3]]
 [1] 5</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb27" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><span class="fu" style="color: #4758AB;
+<div class="sourceCode cell-code" id="cb33" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">obj_size</span>(new_vec) </span></code></pre></div>
 <div class="cell-output cell-output-stdout">
@@ -300,20 +359,20 @@ font-style: inherit;">obj_size</span>(new_vec) </span></code></pre></div>
 </div>
 <p><strong>Explanation:</strong></p>
 <ul>
-<li><p>Assigning <code>5.0</code> to <code>y_vec</code> <strong>forces</strong> R to convert the entire vector to <strong>double</strong>, increasing memory usage.</p></li>
-<li><p><code>lapply(y_vec, as.integer)</code> converts the vector back to integers, reducing its size.</p></li>
-<li><p>But assigning <code>5.5</code> back <strong>forces conversion to double again</strong>.</p></li>
+<li><p>Assigning <code>5.0</code> to <code>y_vec</code> forces R to convert the entire vector to double, increasing memory usage.</p></li>
+<li><p><code>lapply(y_vec, as.integer)</code> converts the values back to integers, but not reducing its size.</p></li>
+<li><p>Assigning <code>5.5</code> back forces conversion to double again but only for the selected element because <code>new_vec</code> is now a <code>list</code>.</p></li>
 </ul>
-<hr>
+<p>📖 <strong>More details:</strong> <a href="https://rdpeng.github.io/RProgDA/the-role-of-physical-memory.html">Mastering Software Development in R</a></p>
 </section>
 </section>
 <section id="partial-matching-in-r" class="level2">
 <h2 class="anchored" data-anchor-id="partial-matching-in-r">Partial Matching in R</h2>
 <p>R allows <strong>partial matching</strong> of list elements, which can lead to unintended behaviour and difficult-to-debug errors.</p>
-<section id="example-8-partial-matching-works-but-its-risky" class="level3">
-<h3 class="anchored" data-anchor-id="example-8-partial-matching-works-but-its-risky"><strong>Example 8: Partial Matching Works, But It’s Risky</strong></h3>
+<section id="example-9-partial-matching-works" class="level3">
+<h3 class="anchored" data-anchor-id="example-9-partial-matching-works"><strong>Example 9: Partial Matching Works</strong></h3>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb29" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1">test_function <span class="ot" style="color: #003B4F;
+<div class="sourceCode cell-code" id="cb35" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1">test_function <span class="ot" style="color: #003B4F;
 background-color: null;
 font-style: inherit;">&lt;-</span> <span class="cf" style="color: #003B4F;
 background-color: null;
@@ -335,7 +394,7 @@ background-color: null;
 font-style: inherit;">p0 =</span> <span class="cn" style="color: #8f5902;
 background-color: null;
 font-style: inherit;">NULL</span>) {</span>
-<span id="cb29-2">  user_defined <span class="ot" style="color: #003B4F;
+<span id="cb35-2">  user_defined <span class="ot" style="color: #003B4F;
 background-color: null;
 font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
 background-color: null;
@@ -348,19 +407,19 @@ background-color: null;
 font-style: inherit;">p=</span>p, <span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;">p0=</span>p0)</span>
-<span id="cb29-3">  user_defined <span class="ot" style="color: #003B4F;
+<span id="cb35-3">  user_defined <span class="ot" style="color: #003B4F;
 background-color: null;
 font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">Filter</span>(<span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">Negate</span>(is.null), user_defined)</span>
-<span id="cb29-4">  <span class="fu" style="color: #4758AB;
+<span id="cb35-4">  <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">return</span>(user_defined)</span>
-<span id="cb29-5">}</span>
-<span id="cb29-6"></span>
-<span id="cb29-7">results <span class="ot" style="color: #003B4F;
+<span id="cb35-5">}</span>
+<span id="cb35-6"></span>
+<span id="cb35-7">results <span class="ot" style="color: #003B4F;
 background-color: null;
 font-style: inherit;">=</span> <span class="fu" style="color: #4758AB;
 background-color: null;
@@ -373,18 +432,7 @@ background-color: null;
 font-style: inherit;">power=</span><span class="fl" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">0.8</span>)</span>
-<span id="cb29-8"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">print</span>(<span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">str</span>(results))</span></code></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>List of 2
- $ alpha: num 0.05
- $ power: num 0.8
-NULL</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb31" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><span class="fu" style="color: #4758AB;
+<span id="cb35-8"><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">print</span>(results<span class="sc" style="color: #5E5E5E;
 background-color: null;
@@ -394,16 +442,31 @@ font-style: inherit;"># Partial matching</span></span></code></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 0.8</code></pre>
 </div>
+<div class="sourceCode cell-code" id="cb37" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">print</span>(results)</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>$alpha
+[1] 0.05
+
+$power
+[1] 0.8</code></pre>
 </div>
-<p><strong>Why is <code>results$p</code> returning <code>NULL</code>?</strong></p>
+</div>
 <ul>
-<li>Because <code>p</code> was not provided in <code>test_function()</code>, but R still allows partial matching.</li>
+<li><p><code>test_function</code> - the function takes four optional arguments, all defaulting to NULL, making them optional.</p></li>
+<li><p>A named list is created to store all input arguments. If an argument is not provided, it remains NULL.</p></li>
+<li><p>Filter(Negate(is.null), user_defined) removes all NULL elements, ensuring only explicitly provided parameters are retained.</p></li>
+</ul>
+<p><strong>Why is <code>results$p</code> returning <code>0.8</code>?</strong></p>
+<ul>
+<li>Because <code>p</code> was not provided in <code>test_function()</code> call, but R still allows partial matching.</li>
 </ul>
 </section>
-<section id="example-9-unexpected-partial-matching-in-lists" class="level3">
-<h3 class="anchored" data-anchor-id="example-9-unexpected-partial-matching-in-lists"><strong>Example 9: Unexpected Partial Matching in Lists</strong></h3>
+<section id="example-10-unexpected-partial-matching-in-lists" class="level3">
+<h3 class="anchored" data-anchor-id="example-10-unexpected-partial-matching-in-lists"><strong>Example 10: Unexpected Partial Matching in Lists</strong></h3>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb33" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1">x <span class="ot" style="color: #003B4F;
+<div class="sourceCode cell-code" id="cb39" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1">x <span class="ot" style="color: #003B4F;
 background-color: null;
 font-style: inherit;">=</span> <span class="fu" style="color: #4758AB;
 background-color: null;
@@ -416,79 +479,138 @@ background-color: null;
 font-style: inherit;">power =</span> <span class="dv" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">10</span>)</span>
-<span id="cb33-2">x<span class="sc" style="color: #5E5E5E;
+<span id="cb39-2">x<span class="sc" style="color: #5E5E5E;
 background-color: null;
-font-style: inherit;">$</span>p  <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Partial matching: returns 10</span></span></code></pre></div>
+font-style: inherit;">$</span>p  </span></code></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 10</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb35" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">if</span> (x<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">$</span>p <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">==</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">10</span>) <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">cat</span>(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"variable p == 10</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">\n</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span>)</span></code></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>variable p == 10</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb37" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><span class="co" style="color: #5E5E5E;
+<div class="sourceCode cell-code" id="cb41" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;"># Avoiding partial matching</span></span>
-<span id="cb37-2"><span class="fu" style="color: #4758AB;
+<span id="cb41-2"><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">options</span>(<span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;">warnPartialMatchDollar =</span> <span class="cn" style="color: #8f5902;
 background-color: null;
 font-style: inherit;">TRUE</span>)</span>
-<span id="cb37-3"><span class="fu" style="color: #4758AB;
+<span id="cb41-3">x<span class="sc" style="color: #5E5E5E;
 background-color: null;
-font-style: inherit;">print</span>(x<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">$</span>p)  <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Now warns about partial matching</span></span></code></pre></div>
+font-style: inherit;">$</span>p</span></code></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Warning in x$p: partial match of 'p' to 'power'</code></pre>
 </div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 10</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb40" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><span class="fu" style="color: #4758AB;
+<div class="sourceCode cell-code" id="cb44" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1">x[[<span class="st" style="color: #20794D;
 background-color: null;
-font-style: inherit;">print</span>(x[[<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"p"</span>]])  <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Explicit retrieval, avoiding unexpected matches</span></span></code></pre></div>
+font-style: inherit;">"p"</span>]]</span></code></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>NULL</code></pre>
 </div>
 </div>
 <p><strong>Best Practices:</strong></p>
 <ul>
-<li><p>Use <strong><code>options(warnPartialMatchDollar = TRUE)</code></strong> to catch unintended partial matches.</p></li>
-<li><p>Always use <strong><code>x[["p"]]</code></strong> instead of <code>x$p</code> to ensure explicit matching.</p></li>
+<li><p>Use <code>options(warnPartialMatchDollar = TRUE)</code> to warn about unintended partial matches.</p></li>
+<li><p>Always use <code>x[["p"]]</code> instead of <code>x$p</code> to ensure explicit matching.</p></li>
 </ul>
 <p>📖 <strong>More details:</strong> <a href="https://adv-r.hadley.nz/subsetting.html?q=partial#section-1">Advanced R - Subsetting</a></p>
 <hr>
-
-
 </section>
+</section>
+<section id="extending-subsetting-with-operator" class="level2">
+<h2 class="anchored" data-anchor-id="extending-subsetting-with-operator"><strong>Extending Subsetting with <code>[[</code> Operator</strong></h2>
+<p>Now that we’ve seen how to extract specific elements from function outputs, we can extend this idea to other cases where structured outputs require efficient subsetting.</p>
+<p>Extracting values from structured objects often requires a combination of <code>sapply()</code>, <code>lapply()</code>, and <code>[[</code> to efficiently access named list elements.</p>
+<hr>
+</section>
+<section id="example-11-running-multiple-t.test-and-extracting-p-values" class="level2">
+<h2 class="anchored" data-anchor-id="example-11-running-multiple-t.test-and-extracting-p-values"><strong>Example 11: Running Multiple <code>t.test()</code> and Extracting P-values</strong></h2>
+<p>When running multiple tests, we can store results in a list and apply subsetting with <code>[[</code>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb46" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">set.seed</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">123</span>)</span>
+<span id="cb46-2"></span>
+<span id="cb46-3">data_list <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">list</span>(</span>
+<span id="cb46-4">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">test1 =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">t.test</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">rnorm</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">10</span>), <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">rnorm</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">10</span>)),</span>
+<span id="cb46-5">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">test2 =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">t.test</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">rnorm</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">15</span>), <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">rnorm</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">15</span>)),</span>
+<span id="cb46-6">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">test3 =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">t.test</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">rnorm</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">20</span>), <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">rnorm</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">20</span>))</span>
+<span id="cb46-7">)</span>
+<span id="cb46-8"></span>
+<span id="cb46-9">p_values <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">sapply</span>(data_list, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">`</span><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">[[</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">`</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"p.value"</span>)</span>
+<span id="cb46-10"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">print</span>(p_values)</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>    test1     test2     test3 
+0.7672027 0.7040755 0.4752422 </code></pre>
+</div>
+</div>
+<ul>
+<li>data_list stores multiple t.test() results in a list.</li>
+<li><code>sapply(data_list, "[[", "p.value")</code> extracts p.value from each result.</li>
+<li>Similarly, <code>[[</code> can extract “conf.int”, “statistic”, or “parameter”, making it a powerful way to subset structured outputs.</li>
+</ul>
+<p>📖 <strong>More details:</strong> <a href="https://adv-r.hadley.nz/subsetting.html?q=partial#section-1">Advanced R - Subsetting</a></p>
+
+
 </section>
 
  ]]></description>
@@ -507,11 +629,11 @@ font-style: inherit;"># Explicit retrieval, avoiding unexpected matches</span></
 
 <section id="motivation" class="level2">
 <h2 class="anchored" data-anchor-id="motivation">Motivation</h2>
-<p>Running computationally expensive tasks in R can be challenging, especially when working with <strong>large datasets</strong> and <strong>intensive operations</strong>. This article provides <strong>practical strategies</strong> for efficiently handling background jobs, optimising performance, debugging, and leveraging parallelisation.</p>
+<p>Running computationally expensive tasks in R can be challenging, especially when working with <strong>large datasets</strong> and <strong>intensive calculations</strong>. This post provides <strong>practical tips</strong> for efficiently handling background jobs, optimising performance, debugging, and parallelisation.</p>
 </section>
 <section id="addressing" class="level2">
 <h2 class="anchored" data-anchor-id="addressing">Addressing</h2>
-<p>Efficient execution of computational tasks ensures that R processes run <strong>without blocking user interaction</strong>, effectively utilising system resources. The <strong>pyramid framework</strong> below illustrates the <strong>layers of computational efficiency</strong> in R programming.</p>
+<p>Efficient execution of computational tasks ensures that R processes run without blocking user interaction, effectively utilising system resources. The pyramid below illustrates the layers of computational efficiency in R programming.</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><img src="https://nikotinz.github.io/JourFixe/posts/August_2024/media/pyramid.png" class="img-fluid quarto-figure quarto-figure-center figure-img"></p>
@@ -522,9 +644,18 @@ font-style: inherit;"># Explicit retrieval, avoiding unexpected matches</span></
 </section>
 <section id="running-background-jobs-in-r" class="level2">
 <h2 class="anchored" data-anchor-id="running-background-jobs-in-r">Running Background Jobs in R</h2>
-<section id="example-1-running-an-iterative-task-in-the-background" class="level3">
-<h3 class="anchored" data-anchor-id="example-1-running-an-iterative-task-in-the-background"><strong>Example 1: Running an Iterative Task in the Background</strong></h3>
-<p>Background jobs allow <strong>long-running computations</strong> to execute independently, freeing the <strong>R console</strong> for other tasks.</p>
+<section id="example-running-an-iterative-task-in-the-background" class="level3">
+<h3 class="anchored" data-anchor-id="example-running-an-iterative-task-in-the-background"><strong>Example: Running an Iterative Task in the Background</strong></h3>
+<p>Background jobs allow long-running computations** to execute independently, freeing the R console for other tasks.</p>
+</section>
+<section id="steps-to-run-a-background-job-in-rstudio" class="level3">
+<h3 class="anchored" data-anchor-id="steps-to-run-a-background-job-in-rstudio"><strong>Steps to Run a Background Job in RStudio</strong></h3>
+<ol type="1">
+<li>Open RStudio.</li>
+<li>Click on “Jobs” → “Start Job” from the RStudio Environment Pane.</li>
+<li>Choose “Run Script in Background” and select <code>script_name.R</code>.</li>
+<li>Monitor progress in the Jobs Pane.</li>
+</ol>
 <div class="columns">
 <div class="column" style="width:55%;">
 <div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><span class="fu" style="color: #4758AB;
@@ -641,28 +772,48 @@ font-style: inherit;">"</span>)</span></code></pre></div>
 <section id="explanation" class="level3">
 <h3 class="anchored" data-anchor-id="explanation"><strong>Explanation:</strong></h3>
 <ul>
-<li><code>Sys.sleep(2)</code> <strong>simulates</strong> a time-consuming task.</li>
-<li><strong>Each iteration</strong> performs a grouped summary operation.</li>
-<li>Running this <strong>in the background</strong> allows users to interact with R <strong>without interruption</strong>.</li>
+<li><code>Sys.sleep(2)</code> simulates a time-consuming task.</li>
+<li>Each iteration performs a grouped summary operation.</li>
+<li>Running this in the background allows users to interact with R without interruption.</li>
 </ul>
 <hr>
 </section>
 </section>
 <section id="responsible-use-of-resources" class="level2">
 <h2 class="anchored" data-anchor-id="responsible-use-of-resources">Responsible Use of Resources</h2>
-<p>It’s crucial to <strong>balance computational demand</strong> to prevent <strong>overloading shared servers</strong>.</p>
-<p><strong>Example:</strong> The BSU servers allow <strong>small to medium-sized tasks</strong>, so large-scale simulations should be managed carefully.</p>
+<p>It’s crucial to balance computational demand to prevent overloading shared servers.</p>
+<p><strong>Example:</strong> Most non-HPC servers allow to run small to medium-sized tasks, so large-scale simulations should be managed carefully.</p>
 <p><a href="media/overloaded.jpg" class="lightbox" data-gallery="quarto-lightbox-gallery-2"><img src="https://nikotinz.github.io/JourFixe/posts/August_2024/media/overloaded.jpg" class="img-fluid" width="1100"></a></p>
-<p>📌 <strong>Best Practice:</strong> Use <strong>resource monitoring tools</strong> (<code>top</code>, <code>htop</code>) to check CPU usage before launching intensive computations.</p>
+<p><strong>Best Practice:</strong></p>
+<ul>
+<li><p>Use resource monitoring tools (<code>top</code>, <code>htop</code>) to check CPU usage before launching intensive computations.</p></li>
+<li><p>Run long processes inside terminal multiplexers (tmux, screen) to keep jobs running even if the connection is lost.</p></li>
+</ul>
+<p><strong>🔗 Useful Resources</strong></p>
+<p>📖 <a href="https://www.gnu.org/software/screen/manual/screen.html">GNU Screen Documentation</a><br>
+📖 <a href="https://github.com/tmux/tmux/wiki">tmux: Terminal Multiplexer</a><br>
+📖 Monitoring System Usage in Linux: <a href="https://man7.org/linux/man-pages/man1/top.1.html"><code>top</code> command</a>, <a href="https://htop.dev/"><code>htop</code> command</a></p>
 <hr>
 </section>
 <section id="code-optimisation-in-r" class="level1">
 <h1>Code Optimisation in R</h1>
 <section id="profiling-computational-performance" class="level2">
 <h2 class="anchored" data-anchor-id="profiling-computational-performance">Profiling Computational Performance</h2>
-<p>Understanding where <strong>R code spends most of its execution time</strong> helps optimise functions.</p>
-<section id="example-2-using-profvis-to-analyse-execution-time" class="level3">
-<h3 class="anchored" data-anchor-id="example-2-using-profvis-to-analyse-execution-time"><strong>Example 2: Using <code>profvis()</code> to Analyse Execution Time</strong></h3>
+<p>Optimising R code begins with understanding where time and resources are spent. Profiling helps identify bottlenecks - functions or operations that consume excessive computation time. By analysing execution time, memory usage, and function calls, we can make targeted improvements to enhance efficiency.</p>
+<section id="why-profiling-matters" class="level3">
+<h3 class="anchored" data-anchor-id="why-profiling-matters"><strong>Why Profiling Matters?</strong></h3>
+<ul>
+<li>Detects slow functions that need optimisation.<br>
+</li>
+<li>Highlights redundant computations or excessive loops.<br>
+</li>
+<li>Helps determine whether vectorisation or parallelisation could improve performance.<br>
+</li>
+<li>Identifies memory-intensive operations that could cause inefficiencies.</li>
+</ul>
+</section>
+<section id="example-using-profvis-to-analyse-execution-time" class="level3">
+<h3 class="anchored" data-anchor-id="example-using-profvis-to-analyse-execution-time"><strong>Example: Using <code>profvis()</code> to Analyse Execution Time</strong></h3>
 <div class="sourceCode" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">library</span>(profvis)</span>
@@ -750,8 +901,8 @@ font-style: inherit;">30</span>)</span>
 <section id="explanation-1" class="level3">
 <h3 class="anchored" data-anchor-id="explanation-1"><strong>Explanation:</strong></h3>
 <ul>
-<li><code>profvis()</code> visualises <strong>where time is spent</strong> in an R script.</li>
-<li>Helps identify <strong>slow functions</strong> and optimise code for <strong>better efficiency</strong>.</li>
+<li><code>profvis()</code> visualises where time is spent in an R script.</li>
+<li>Helps identify slow functions and optimise code for better efficiency.</li>
 </ul>
 <p><a href="media/profvis.png" class="lightbox" data-gallery="quarto-lightbox-gallery-3"><img src="https://nikotinz.github.io/JourFixe/posts/August_2024/media/profvis.png" class="img-fluid"></a></p>
 <hr>
@@ -759,8 +910,58 @@ font-style: inherit;">30</span>)</span>
 </section>
 <section id="debugging-r-code" class="level2">
 <h2 class="anchored" data-anchor-id="debugging-r-code">Debugging R Code</h2>
-<section id="example-3-using-browser-for-step-by-step-debugging" class="level3">
-<h3 class="anchored" data-anchor-id="example-3-using-browser-for-step-by-step-debugging"><strong>Example 3: Using <code>browser()</code> for Step-by-Step Debugging</strong></h3>
+<p>Writing R code often involves unexpected errors, warnings, or incorrect outputs. Effective debugging strategies help identify issues quickly, saving time and improving code reliability. Debugging tools allow users to step through execution, inspect variable values, and trace errors at runtime.</p>
+<section id="why-debugging-matters" class="level3">
+<h3 class="anchored" data-anchor-id="why-debugging-matters"><strong>Why Debugging Matters?</strong></h3>
+<ul>
+<li>Helps locate logic errors and unexpected behavior.<br>
+</li>
+<li>Allows interactive inspection of variables during execution.<br>
+</li>
+<li>Enables tracing of function calls to find where an error originates.<br>
+</li>
+<li>Reduces reliance on excessive <code>print()</code> statements for debugging.</li>
+</ul>
+</section>
+<section id="common-debugging-techniques-in-r" class="level3">
+<h3 class="anchored" data-anchor-id="common-debugging-techniques-in-r"><strong>Common Debugging Techniques in R</strong></h3>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 52%">
+<col style="width: 47%">
+</colgroup>
+<thead>
+<tr class="header">
+<th><strong>Method</strong></th>
+<th><strong>Use Case</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>browser()</code></td>
+<td>Interactive debugging by pausing function execution.</td>
+</tr>
+<tr class="even">
+<td><code>traceback()</code></td>
+<td>Identifies where an error occurred after execution fails.</td>
+</tr>
+<tr class="odd">
+<td><code>debug()</code></td>
+<td>Step-through debugging for specific functions.</td>
+</tr>
+<tr class="even">
+<td><code>options(error = recover)</code></td>
+<td>Allows selecting the function frame where an error occurred.</td>
+</tr>
+<tr class="odd">
+<td><code>tryCatch()</code></td>
+<td>Handles errors gracefully without stopping execution.</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="example-using-browser-for-step-by-step-debugging" class="level3">
+<h3 class="anchored" data-anchor-id="example-using-browser-for-step-by-step-debugging"><strong>Example: Using <code>browser()</code> for Step-by-Step Debugging</strong></h3>
 <div class="sourceCode" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1">foo <span class="ot" style="color: #003B4F;
 background-color: null;
 font-style: inherit;">&lt;-</span> <span class="cf" style="color: #003B4F;
@@ -788,7 +989,7 @@ font-style: inherit;">10</span>)</span></code></pre></div>
 <section id="explanation-2" class="level3">
 <h3 class="anchored" data-anchor-id="explanation-2"><strong>Explanation:</strong></h3>
 <ul>
-<li><code>browser()</code> allows <strong>stepwise execution</strong>, helping debug <strong>unexpected errors</strong>.</li>
+<li><code>browser()</code> allows stepwise execution, helping debug unexpected errors.</li>
 <li>The function pauses at <code>browser()</code>, enabling users to inspect variables interactively.</li>
 </ul>
 <p><video src="media/browser.mp4" class="img-fluid" controls=""><a href="media/browser.mp4">Video</a></video></p>
@@ -797,9 +998,55 @@ font-style: inherit;">10</span>)</span></code></pre></div>
 </section>
 <section id="parallelisation-in-r" class="level2">
 <h2 class="anchored" data-anchor-id="parallelisation-in-r">Parallelisation in R</h2>
-<section id="example-4-parallelising-loops-with-foreach" class="level3">
-<h3 class="anchored" data-anchor-id="example-4-parallelising-loops-with-foreach"><strong>Example 4: Parallelising Loops with <code>foreach</code></strong></h3>
-<p>Using parallel computing <strong>significantly reduces execution time</strong>.</p>
+<p>Parallel computing significantly reduces execution time by distributing workloads across multiple CPU cores or machines. R provides several parallel computing strategies, each suited for different use cases, from simple parallel loops to high-performance distributed computing.</p>
+<section id="why-parallelisation-matters" class="level3">
+<h3 class="anchored" data-anchor-id="why-parallelisation-matters"><strong>Why Parallelisation Matters?</strong></h3>
+<ul>
+<li>Reduces execution time for large datasets and simulations.<br>
+</li>
+<li>Utilises multiple CPU cores to improve efficiency.<br>
+</li>
+<li>Allows for distributed computing across clusters or cloud services.</li>
+</ul>
+</section>
+<section id="common-parallelisation-strategies-in-r" class="level3">
+<h3 class="anchored" data-anchor-id="common-parallelisation-strategies-in-r"><strong>Common Parallelisation Strategies in R</strong></h3>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 62%">
+<col style="width: 37%">
+</colgroup>
+<thead>
+<tr class="header">
+<th><strong>Method</strong></th>
+<th><strong>Use Case</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>foreach</code> + <code>doParallel</code></td>
+<td>Loops that can be parallelised across CPU cores.</td>
+</tr>
+<tr class="even">
+<td><code>parallel::mclapply()</code></td>
+<td>Multi-core version of <code>lapply()</code> (Linux/macOS only).</td>
+</tr>
+<tr class="odd">
+<td><code>future</code> + <code>furrr</code></td>
+<td>Asynchronous parallel computing with flexible backends.</td>
+</tr>
+<tr class="even">
+<td><code>mirai</code></td>
+<td>High-performance, low-overhead async computing.</td>
+</tr>
+</tbody>
+</table>
+<p>Using the right parallelisation approach depends on the type of computation, hardware resources, and scalability requirements.</p>
+<hr>
+</section>
+<section id="example-parallelising-loops-with-foreach" class="level3">
+<h3 class="anchored" data-anchor-id="example-parallelising-loops-with-foreach"><strong>Example: Parallelising Loops with <code>foreach</code></strong></h3>
+<p>Using parallel computing significantly reduces execution time.</p>
 <div class="columns">
 <div class="column" style="width:45%;">
 <section id="regular-for-loop" class="level4">
@@ -905,16 +1152,32 @@ font-style: inherit;">stopCluster</span>(cl)</span></code></pre></div>
 <section id="explanation-3" class="level3">
 <h3 class="anchored" data-anchor-id="explanation-3"><strong>Explanation:</strong></h3>
 <ul>
-<li><strong>Standard <code>for()</code> loops</strong> execute sequentially, which is slow for large-scale tasks.</li>
-<li><strong><code>foreach()</code> with <code>doParallel</code></strong> allows parallel execution, <strong>leveraging multiple CPU cores</strong>.</li>
-<li><code>makeCluster(parallel::detectCores() - 1)</code> ensures all but one core are used, <strong>preventing system overload</strong>.</li>
+<li>Standard <code>for()</code> loops execute sequentially, which is slow for large-scale tasks.<br>
+</li>
+<li><code>foreach()</code> with <code>doParallel</code> allows parallel execution, using multiple CPU cores.<br>
+</li>
+<li><code>makeCluster(parallel::detectCores() - 1)</code> ensures all but one core are used, preventing system overload.<br>
+</li>
 </ul>
-<p>📌 <strong>Best Practice:</strong> Always <strong>test code sequentially first</strong> before enabling parallel execution to debug potential issues.</p>
-<hr>
+<p><strong>Best Practice:</strong></p>
+<ul>
+<li>Always <strong>test code sequentially first</strong> before enabling parallel execution to debug potential issues.<br>
+</li>
+<li>Ensure efficient memory usage, as parallel processing may increase RAM consumption.<br>
+</li>
+<li>Use <code>stopCluster(cl)</code> after parallel execution to release system resources.</li>
+<li>Using <code>makeCluster(parallel::detectCores() - 1)</code> may overload the system, especially on shared servers or personal machines, leading to performance degradation for other tasks. Best practice suggests limiting the number of cores to 2 in CRAN package examples and vignettes to ensure compatibility across different systems and prevent excessive resource consumption.</li>
+</ul>
+<p><strong>🔗 Useful Resources</strong><br>
+📖 <a href="https://cran.r-project.org/web/packages/foreach/index.html">foreach Package Documentation</a><br>
+📖 <a href="https://cran.r-project.org/web/packages/future/vignettes/future-1-overview.html">future Package Documentation</a><br>
+📖 <a href="https://cran.r-project.org/web/packages/mirai/index.html">mirai: Lightweight Async Computing</a><br>
+📖 <a href="https://cran.r-project.org/web/views/HighPerformanceComputing.html">Parallel Computing in R Guide</a><br>
+————————————————————————</p>
 </section>
 <section id="conclusion" class="level3">
 <h3 class="anchored" data-anchor-id="conclusion"><strong>Conclusion</strong></h3>
-<p>By implementing these techniques, you can <strong>run computational tasks in R more efficiently</strong>, reducing runtime and improving workflow performance. 🚀</p>
+<p>By implementing these techniques, you can run computational tasks in R more efficiently, reducing runtime and improving workflow performance.</p>
 
 
 </section>

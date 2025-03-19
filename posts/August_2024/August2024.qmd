@@ -15,11 +15,11 @@ categories: [R-tips]
 
 ## Motivation
 
-Running computationally expensive tasks in R can be challenging, especially when working with **large datasets** and **intensive operations**. This article provides **practical strategies** for efficiently handling background jobs, optimising performance, debugging, and leveraging parallelisation.
+Running computationally expensive tasks in R can be challenging, especially when working with **large datasets** and **intensive calculations**. This post provides **practical tips** for efficiently handling background jobs, optimising performance, debugging, and parallelisation.
 
 ## Addressing
 
-Efficient execution of computational tasks ensures that R processes run **without blocking user interaction**, effectively utilising system resources. The **pyramid framework** below illustrates the **layers of computational efficiency** in R programming.
+Efficient execution of computational tasks ensures that R processes run without blocking user interaction, effectively utilising system resources. The pyramid below illustrates the layers of computational efficiency in R programming.
 
 ![](media/pyramid.png){fig-align="center"}
 
@@ -29,9 +29,16 @@ Efficient execution of computational tasks ensures that R processes run **withou
 
 ## Running Background Jobs in R
 
-### **Example 1: Running an Iterative Task in the Background**
+### **Example: Running an Iterative Task in the Background**
 
-Background jobs allow **long-running computations** to execute independently, freeing the **R console** for other tasks.
+Background jobs allow long-running computations\*\* to execute independently, freeing the R console for other tasks.
+
+### **Steps to Run a Background Job in RStudio**
+
+1.  Open RStudio.
+2.  Click on “Jobs” → “Start Job” from the RStudio Environment Pane.
+3.  Choose “Run Script in Background” and select `script_name.R`.
+4.  Monitor progress in the Jobs Pane.
 
 :::::: columns
 ::: {.column width="55%"}
@@ -70,21 +77,31 @@ cat("Background job completed.\n")
 
 ### **Explanation:**
 
--   `Sys.sleep(2)` **simulates** a time-consuming task.
--   **Each iteration** performs a grouped summary operation.
--   Running this **in the background** allows users to interact with R **without interruption**.
+-   `Sys.sleep(2)` simulates a time-consuming task.
+-   Each iteration performs a grouped summary operation.
+-   Running this in the background allows users to interact with R without interruption.
 
 ------------------------------------------------------------------------
 
 ## Responsible Use of Resources
 
-It’s crucial to **balance computational demand** to prevent **overloading shared servers**.
+It’s crucial to balance computational demand to prevent overloading shared servers.
 
-**Example:** The BSU servers allow **small to medium-sized tasks**, so large-scale simulations should be managed carefully.
+**Example:** Most non-HPC servers allow to run small to medium-sized tasks, so large-scale simulations should be managed carefully.
 
 ![](media/overloaded.jpg){.lightbox width="1100"}
 
-📌 **Best Practice:** Use **resource monitoring tools** (`top`, `htop`) to check CPU usage before launching intensive computations.
+**Best Practice:**
+
+-   Use resource monitoring tools (`top`, `htop`) to check CPU usage before launching intensive computations.
+
+-   Run long processes inside terminal multiplexers (tmux, screen) to keep jobs running even if the connection is lost.
+
+**🔗 Useful Resources**
+
+📖 [GNU Screen Documentation](https://www.gnu.org/software/screen/manual/screen.html)\
+📖 [tmux: Terminal Multiplexer](https://github.com/tmux/tmux/wiki)\
+📖 Monitoring System Usage in Linux: [`top` command](https://man7.org/linux/man-pages/man1/top.1.html), [`htop` command](https://htop.dev/)
 
 ------------------------------------------------------------------------
 
@@ -92,9 +109,16 @@ It’s crucial to **balance computational demand** to prevent **overloading shar
 
 ## Profiling Computational Performance
 
-Understanding where **R code spends most of its execution time** helps optimise functions.
+Optimising R code begins with understanding where time and resources are spent. Profiling helps identify bottlenecks - functions or operations that consume excessive computation time. By analysing execution time, memory usage, and function calls, we can make targeted improvements to enhance efficiency.
 
-### **Example 2: Using `profvis()` to Analyse Execution Time**
+### **Why Profiling Matters?**
+
+-   Detects slow functions that need optimisation.\
+-   Highlights redundant computations or excessive loops.\
+-   Helps determine whether vectorisation or parallelisation could improve performance.\
+-   Identifies memory-intensive operations that could cause inefficiencies.
+
+### **Example: Using `profvis()` to Analyse Execution Time**
 
 ``` r
 library(profvis)
@@ -121,8 +145,8 @@ profvis({
 
 ### **Explanation:**
 
--   `profvis()` visualises **where time is spent** in an R script.
--   Helps identify **slow functions** and optimise code for **better efficiency**.
+-   `profvis()` visualises where time is spent in an R script.
+-   Helps identify slow functions and optimise code for better efficiency.
 
 ![](media/profvis.png){.lightbox}
 
@@ -130,7 +154,26 @@ profvis({
 
 ## Debugging R Code
 
-### **Example 3: Using `browser()` for Step-by-Step Debugging**
+Writing R code often involves unexpected errors, warnings, or incorrect outputs. Effective debugging strategies help identify issues quickly, saving time and improving code reliability. Debugging tools allow users to step through execution, inspect variable values, and trace errors at runtime.
+
+### **Why Debugging Matters?**
+
+-   Helps locate logic errors and unexpected behavior.\
+-   Allows interactive inspection of variables during execution.\
+-   Enables tracing of function calls to find where an error originates.\
+-   Reduces reliance on excessive `print()` statements for debugging.
+
+### **Common Debugging Techniques in R**
+
+| **Method** | **Use Case** |
+|--------------------------------------|----------------------------------|
+| `browser()` | Interactive debugging by pausing function execution. |
+| `traceback()` | Identifies where an error occurred after execution fails. |
+| `debug()` | Step-through debugging for specific functions. |
+| `options(error = recover)` | Allows selecting the function frame where an error occurred. |
+| `tryCatch()` | Handles errors gracefully without stopping execution. |
+
+### **Example: Using `browser()` for Step-by-Step Debugging**
 
 ``` r
 foo <- function(x) {
@@ -143,7 +186,7 @@ foo(10)
 
 ### **Explanation:**
 
--   `browser()` allows **stepwise execution**, helping debug **unexpected errors**.
+-   `browser()` allows stepwise execution, helping debug unexpected errors.
 -   The function pauses at `browser()`, enabling users to inspect variables interactively.
 
 ![](media/browser.mp4)
@@ -152,9 +195,30 @@ foo(10)
 
 ## Parallelisation in R
 
-### **Example 4: Parallelising Loops with `foreach`**
+Parallel computing significantly reduces execution time by distributing workloads across multiple CPU cores or machines. R provides several parallel computing strategies, each suited for different use cases, from simple parallel loops to high-performance distributed computing.
 
-Using parallel computing **significantly reduces execution time**.
+### **Why Parallelisation Matters?**
+
+-   Reduces execution time for large datasets and simulations.\
+-   Utilises multiple CPU cores to improve efficiency.\
+-   Allows for distributed computing across clusters or cloud services.
+
+### **Common Parallelisation Strategies in R**
+
+| **Method** | **Use Case** |
+|---------------------------------------------|---------------------------|
+| `foreach` + `doParallel` | Loops that can be parallelised across CPU cores. |
+| `parallel::mclapply()` | Multi-core version of `lapply()` (Linux/macOS only). |
+| `future` + `furrr` | Asynchronous parallel computing with flexible backends. |
+| `mirai` | High-performance, low-overhead async computing. |
+
+Using the right parallelisation approach depends on the type of computation, hardware resources, and scalability requirements.
+
+------------------------------------------------------------------------
+
+### **Example: Parallelising Loops with `foreach`**
+
+Using parallel computing significantly reduces execution time.
 
 :::::: columns
 ::: {.column width="45%"}
@@ -193,14 +257,24 @@ stopCluster(cl)
 
 ### **Explanation:**
 
--   **Standard `for()` loops** execute sequentially, which is slow for large-scale tasks.
--   **`foreach()` with `doParallel`** allows parallel execution, **leveraging multiple CPU cores**.
--   `makeCluster(parallel::detectCores() - 1)` ensures all but one core are used, **preventing system overload**.
+-   Standard `for()` loops execute sequentially, which is slow for large-scale tasks.\
+-   `foreach()` with `doParallel` allows parallel execution, using multiple CPU cores.\
+-   `makeCluster(parallel::detectCores() - 1)` ensures all but one core are used, preventing system overload.\
 
-📌 **Best Practice:** Always **test code sequentially first** before enabling parallel execution to debug potential issues.
+**Best Practice:** 
 
+- Always **test code sequentially first** before enabling parallel execution to debug potential issues.\
+- Ensure efficient memory usage, as parallel processing may increase RAM consumption.\
+- Use `stopCluster(cl)` after parallel execution to release system resources.
+- Using `makeCluster(parallel::detectCores() - 1)` may overload the system, especially on shared servers or personal machines, leading to performance degradation for other tasks. Best practice suggests limiting the number of cores to 2 in CRAN package examples and vignettes to ensure compatibility across different systems and prevent excessive resource consumption.
+
+**🔗 Useful Resources**\
+📖 [foreach Package Documentation](https://cran.r-project.org/web/packages/foreach/index.html)\
+📖 [future Package Documentation](https://cran.r-project.org/web/packages/future/vignettes/future-1-overview.html)\
+📖 [mirai: Lightweight Async Computing](https://cran.r-project.org/web/packages/mirai/index.html)\
+📖 [Parallel Computing in R Guide](https://cran.r-project.org/web/views/HighPerformanceComputing.html)\
 ------------------------------------------------------------------------
 
 ### **Conclusion**
 
-By implementing these techniques, you can **run computational tasks in R more efficiently**, reducing runtime and improving workflow performance. 🚀
+By implementing these techniques, you can run computational tasks in R more efficiently, reducing runtime and improving workflow performance.
